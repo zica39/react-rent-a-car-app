@@ -1,9 +1,11 @@
 import logo from './logo.svg';
 import './App.css';
+import EmployeeLayout from "./components/layout/EmployeeLayout";
 
 function App() {
   return (
     <div className="App">
+      <EmployeeLayout>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -18,6 +20,7 @@ function App() {
           Learn React
         </a>
       </header>
+      </EmployeeLayout>
     </div>
   );
 }
