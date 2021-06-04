@@ -7,10 +7,15 @@ import BasicLayout from "../components/layout/BasicLayout";
 import {auth} from "../functions/tools";
 import {ROLES} from "../constants/config";
 
-const PrivateRoute = ({component: Component, isPrivate, role, ...rest}) => {
+import EmployeeHome from "../pages/home/employee/Home";
+import ClientHome from "../pages/home/client/Home";
+
+const PrivateRoute = ({component: Component, isPrivate, role, path, ...rest}) => {
     const Layout = isPrivate ? auth()?.role === ROLES.EMPLOYEE?EmployeeLayout:ClientLayout : BasicLayout;
     const history  = useHistory();
 	const location = useLocation();
+
+	if(path === '/')Component = (auth()?.role === ROLES.EMPLOYEE)?EmployeeHome:ClientHome;
 
     if(auth() && !isPrivate)history.push('/');
 	if(!auth() && isPrivate && location.pathname === '/')history.push('/login');

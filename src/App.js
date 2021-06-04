@@ -1,31 +1,32 @@
 import './App.css';
 import {Switch, Route} from 'react-router-dom';
 import {QueryClient,QueryClientProvider} from 'react-query';
-import Login from "./pages/login/Login";
-import EmployeeHome from "./pages/home/employee/Home";
-import ClientHome from "./pages/home/client/Home"
-import NotFound from "./pages/notFound/NotFound";
 import PrivateRoute from "./privateRoute/PrivateRoute";
 import {ROLES} from "./constants/config";
-import {auth} from "./functions/tools";
+
+import Login from "./pages/login/Login";
+import NotFound from "./pages/notFound/NotFound";
+
+import Users from "./pages/users/Users";
+import Cars from "./pages/cars/Cars";
+import Reservations from "./pages/reservations/Reservations";
 
 function App() {
 
     const queryClient = new QueryClient();
-    const Home = (auth()?.role === ROLES.EMPLOYEE)?EmployeeHome:ClientHome;
 
   return (
     <div className="App">
         <QueryClientProvider client={queryClient}>
             <div className="App">
                 <Switch>
-                    {/*<PrivateRoute path="/users" exact component={Users} isPrivate/>
-                    <PrivateRoute path="/cars" exact component={Cars} isPrivate/>
-                    <PrivateRoute path="/reservations" exact component={Reservations} isPrivate/>*/}
+                    <PrivateRoute path="/users" exact component={Users} isPrivate role={ROLES.EMPLOYEE}/>
+                    <PrivateRoute path="/cars" exact component={Cars} isPrivate role={ROLES.EMPLOYEE} />
+                    <PrivateRoute path="/reservations" exact component={Reservations} isPrivate role={ROLES.EMPLOYEE} />
 
                     <PrivateRoute exact path="/login" component={Login}/>
                     {/*<PrivateRoute path="/register" component={Register}/>*/}
-                    <PrivateRoute exact  path="/" component={Home} isPrivate role={ROLES.ANY}/>
+                    <PrivateRoute exact  path="/"  isPrivate role={ROLES.ANY}/>
                     <Route component={NotFound}  />
                 </Switch>
             </div>

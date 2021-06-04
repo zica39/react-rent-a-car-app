@@ -2,7 +2,7 @@ import logo from '../../../logo.svg';
 
 const Home = () => {
 
-    return <header className="App-header">
+    return <header key="1" className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
             Client home
