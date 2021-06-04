@@ -9,3 +9,7 @@ export const saveAuth = (user) => {
         'role': user.role
     }));
 }
+
+export const removeAuth = () => {
+    localStorage.removeItem('auth');
+}
