@@ -8,7 +8,7 @@ const BreadcrumbNav = () => {
 
     const path = location.pathname.split('/');
 
-    return <Breadcrumb style={{ margin: '5px 0' , display:'flex', justifyContent:'start' }}>
+    return <Breadcrumb style={{ margin: '5px 0' , display:'flex', justifyContent:'start', background:'#d9d9d9',padding:'0 5px' }}>
         {Array(path.length).fill('').map((item,index)=>{
             return <Breadcrumb.Item key={index}>
                 <Link to={path.slice(0,index+1).join('/')}>

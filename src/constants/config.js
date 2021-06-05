@@ -4,7 +4,7 @@ export const ROLES = {
     ANY:'Any'
 }
 export const PAGE_INDEX = {
-    "/users": "1",
+    "/clients": "1",
     "/cars": "2",
     "/reservations":"3"
 }

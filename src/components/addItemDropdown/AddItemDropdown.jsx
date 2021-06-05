@@ -1,5 +1,6 @@
 import {Button, Dropdown, Menu} from "antd";
 import {CalendarOutlined, CarOutlined, DownOutlined, PlusSquareOutlined, UserOutlined} from "@ant-design/icons";
+import {Link} from "react-router-dom";
 import React from "react";
 
 const AddItemDropdown = () => {
@@ -7,7 +8,7 @@ const AddItemDropdown = () => {
     const menu = (
         <Menu /*onClick={}*/ theme="dark">
             <Menu.Item key="1" icon={<UserOutlined />}>
-                Korisnika
+                <Link to="/clients/create">Klijenta</Link>
             </Menu.Item>
             <Menu.Item key="2" icon={<CarOutlined />}>
                 Vozilo

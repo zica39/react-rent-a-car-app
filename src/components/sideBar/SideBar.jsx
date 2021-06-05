@@ -29,7 +29,7 @@ const SideBar = () => {
             style={{ height: '100%', borderRight: 0 }}
             theme="dark"
         >
-            <Menu.Item key="1" onClick={()=>switchToPage('/users')} icon={<UserOutlined />} >Korisnici</Menu.Item>
+            <Menu.Item key="1" onClick={()=>switchToPage('/clients')} icon={<UserOutlined />} >Klijenti</Menu.Item>
             <Menu.Item key="2" onClick={()=>switchToPage('/cars')} icon={<CarOutlined />}>Vozila</Menu.Item>
             <Menu.Item key="3" onClick={()=>switchToPage('/reservations')} icon={<CalendarOutlined />}>Rezervacije</Menu.Item>
         </Menu>
