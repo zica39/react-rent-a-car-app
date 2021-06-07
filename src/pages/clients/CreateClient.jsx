@@ -5,8 +5,7 @@ import {useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {useHistory} from "react-router-dom";
-import {MailOutlined} from "@ant-design/icons";
-import CreateUserForm from "./components/createClientForm/CreateClientForm";
+import CreateClientForm from "./components/createClientForm/CreateClientForm";
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 const passportRegExp = new RegExp("^[A-Z0-9.,/ $@()]+$");
@@ -24,7 +23,7 @@ const schema = yup.object().shape({
 
 const CreateClient = () => {
 
-    const {formState: { errors }, handleSubmit, control} = useForm({
+    const {formState: { errors }, handleSubmit, control,reset} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onChange',
         resolver: yupResolver(schema),
@@ -35,7 +34,7 @@ const CreateClient = () => {
             id_card:'',
             phone:'',
             email:'',
-            notes:'',
+            remark:'',
         }
     });
     const history = useHistory();
@@ -55,7 +54,7 @@ const CreateClient = () => {
                /* subTitle="This is a subtitle"*/
             />
 
-           <CreateUserForm onFinish={onFinish} errors={errors} control={control} handleSubmit={handleSubmit} />
+           <CreateClientForm onFinish={onFinish} errors={errors} control={control} handleSubmit={handleSubmit} />
         </>
     );
 

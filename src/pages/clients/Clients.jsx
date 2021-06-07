@@ -29,7 +29,7 @@ const Clients = () => {
     ];
 
     const data = [];
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 8; i++) {
         data.push({
             key: i,
             name:'Marko Markovic',
