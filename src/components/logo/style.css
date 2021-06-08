@@ -1,8 +1,11 @@
 .logo {
+    position: absolute;
+    left:0;
+    top:0;
     float: left;
-    width: 120px;
-    height: 31px;
-    margin: 16px 24px 16px 0;
+    width: 170px;
+    height: 50px;
+    margin: 10px 15px;
     background-image: url('./logo.jpg');
     background-size:contain;
     background-repeat: no-repeat;

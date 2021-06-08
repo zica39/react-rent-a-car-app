@@ -17,14 +17,14 @@ const NavbarTop = () => {
     return <Header className="header" >
         <Logo/>
         <Menu selectable={false} mode="horizontal" theme="dark">
-            {auth()?.role === ROLES.EMPLOYEE && <Menu.Item key="1"> <AddItemDropdown/> </Menu.Item>}
-            <Menu.Item key="2" style={{float:"right"}}
+            {auth()?.role === ROLES.EMPLOYEE && <Menu.Item key="1" style={{background:'none',marginLeft:150}}> <AddItemDropdown/> </Menu.Item>}
+            <Menu.Item key="2" style={{float:"right",background:'none',padding:0}}
                        icon={<LogoutOutlined />}
                        onClick={()=>{removeAuth();history.push('/login')}}>
                 Odjavi se
             </Menu.Item>
-            <Menu.Item key="3" style={{float:"right"}}> <LanguageSelect/> </Menu.Item>
-            <Menu.Item key="4" style={{float:"right"}}> <UserInfo/> </Menu.Item>
+            <Menu.Item key="3" style={{float:"right",background:'none',margin:0}}> <LanguageSelect/> </Menu.Item>
+            <Menu.Item key="4" style={{float:"right",background:'none',padding:0}}> <UserInfo/> </Menu.Item>
         </Menu>
 
     </Header>

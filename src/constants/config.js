@@ -18,7 +18,8 @@ export const INPUT_TYPE = {
     TEXT:1,
     SELECT:2,
     TEXTAREA:3,
-    NUMBER:4
+    NUMBER:4,
+    DATE:5
 }
 
 export const CAR_MIN_YEAR = 1990;

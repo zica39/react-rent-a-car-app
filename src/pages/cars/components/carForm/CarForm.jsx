@@ -3,7 +3,7 @@ import {Form} from "antd";
 import FormInput from "../../../../components/formInput/FormInput";
 import {INPUT_TYPE,CAR_MIN_YEAR} from "../../../../constants/config";
 
-const EditShowForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
+const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
 
     return  <Form
         id="edit-car-form"
@@ -104,4 +104,4 @@ const EditShowForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
     </Form>
 }
 
-export default EditShowForm;
+export default CarForm;

@@ -1,13 +1,13 @@
 import { Table, Space, Button,Input } from 'antd';
 import { EditOutlined,PlusSquareOutlined,DeleteOutlined } from '@ant-design/icons';
-import {useState} from "react";
-import EditShowModal from "./components/editShowModal/EditShowModal";
+import {useEffect, useState} from "react";
+import ShowCarModal from "./components/showCarModal/ShowCarModal";
+import StepFormModal from "./components/stepFormModal/StepFormModal";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {FORM_MODE,CAR_MIN_YEAR} from "../../constants/config";
-import {showConfirm} from "../../functions/tools";
-import './style.css';
+import { pullData, showConfirm} from "../../functions/tools";
 
 const car_plate = new RegExp(/^[A-Z]{1,3}-[A-Z]{1,2}[0-9]{3,4}$/g)
 const schema = yup.object().shape({
@@ -19,6 +19,7 @@ const schema = yup.object().shape({
     remark:yup.string().max(500)
 });
 
+const NEW_CAR = {open:true,title:'Kreiraj novo vozilo',mode:FORM_MODE.CREATE,id:0};
 const Cars = () => {
 
     const {formState: { errors }, handleSubmit, control,reset} = useForm({
@@ -38,7 +39,7 @@ const Cars = () => {
         return {
             onClick: () => {
                 console.log(record); //record.id
-                setOpenModal({open:true,title:'Informacije o vozilu',mode:FORM_MODE.SHOW,id:0});
+                setOpenModal({open:true,title:'Informacije o vozilu',mode:FORM_MODE.SHOW,id:0,data:record});
             }
         };
     }
@@ -95,12 +96,23 @@ const Cars = () => {
         });
     }
 
+    useEffect(()=>{
+        if(pullData('open_modal'))setOpenModal(NEW_CAR);
+    },[]);
+
     return ( <>
         <Space style={{ marginTop: 10,display:'flex',justifyContent:'space-between' }}>
-            <Button icon={<PlusSquareOutlined />} onClick={()=>{}}>Dodaj vozilo</Button>
+            <Button icon={<PlusSquareOutlined />} onClick={()=>{setOpenModal(NEW_CAR);}}>Dodaj vozilo</Button>
             <Input.Search placeholder="Pretrazi vozilo" allowClear onSearch={"onSearch"} style={{ width: 200 }} />
 
-            <EditShowModal
+            <StepFormModal
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                title={openModal.title}
+                form={{errors:errors,handleSubmit:handleSubmit,control:control,reset:reset}}
+            />
+
+            <ShowCarModal
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 title={openModal.title}
@@ -113,7 +125,7 @@ const Cars = () => {
                bordered={true}
                pagination={false}
                scroll={{ y: window.innerHeight-250 }}
-               className='time-table-row-select'
+               className='hover-row'
         />
     </>)
 

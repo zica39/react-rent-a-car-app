@@ -1,5 +1,19 @@
 import { Modal } from 'antd';
 
+export const storeData = (name,data) =>{
+    localStorage.setItem(name,JSON.stringify(data));
+}
+export const loadData = (name) =>{
+    return JSON.parse(localStorage.getItem(name));
+}
+export const pullData = (name) =>{
+    let data = JSON.parse(localStorage.getItem(name));
+    destroyData(name);
+    return data;
+}
+export const destroyData = (name) => {
+    localStorage.removeItem(name);
+}
 
 export const auth = () => {
     return JSON.parse(localStorage.getItem('auth'));

@@ -1,25 +1,20 @@
 import React from "react";
-import {Button, Form} from "antd";
-import {Link} from 'react-router-dom';
-import {INPUT_TYPE} from "../../../../constants/config";
-import {
-    SaveOutlined,
-    IdcardOutlined,
-    MailOutlined,
-    PhoneOutlined
-} from "@ant-design/icons";
+import {Form} from "antd";
 import FormInput from "../../../../components/formInput/FormInput";
+import {INPUT_TYPE} from "../../../../constants/config";
+import {IdcardOutlined, MailOutlined, PhoneOutlined} from "@ant-design/icons";
 
-const CreateClientForm = ({onFinish,handleSubmit,errors,control}) => {
+const ClientForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
 
     return  <Form
-        labelCol={{ span: 4 }}
-        wrapperCol={{ span: 18 }}
+        id="edit-reservation-form"
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 17 }}
         layout="horizontal"
         initialValues={{ }}
         onFinish={handleSubmit(onFinish)}
         onValuesChange={()=>{}}
-         size="default"
+        size="default"
     >
         <FormInput data={{
             type:INPUT_TYPE.TEXT,
@@ -27,6 +22,7 @@ const CreateClientForm = ({onFinish,handleSubmit,errors,control}) => {
             label:'Ime',
             required:true,
             input_params:{
+                disabled:disabled,
                 placeholder:"Unesite ime"
             }
         }} errors={errors} control={control}/>
@@ -37,6 +33,7 @@ const CreateClientForm = ({onFinish,handleSubmit,errors,control}) => {
             label:'Prezime',
             required:true,
             input_params:{
+                disabled:disabled,
                 placeholder:"Unesite prezime"
             }
         }} errors={errors} control={control}/>
@@ -47,6 +44,7 @@ const CreateClientForm = ({onFinish,handleSubmit,errors,control}) => {
             label:'Drzava',
             required:true,
             input_params:{
+                disabled:disabled,
                 placeholder:"Izaberite drzavu"
             },
             options:[{label:'-Izaberite drzavu-',value:''},{label: 'Crna Gora',value: '1'}]
@@ -58,6 +56,7 @@ const CreateClientForm = ({onFinish,handleSubmit,errors,control}) => {
             label:'Broj LK/Pasosa',
             required:true,
             input_params:{
+                disabled:disabled,
                 placeholder:"Unesite broj lk/pasosa"
             },
             tooltip:"Unesite broj licne karte ili pasosa",
@@ -70,6 +69,7 @@ const CreateClientForm = ({onFinish,handleSubmit,errors,control}) => {
             label:'Telefon',
             required:true,
             input_params:{
+                disabled:disabled,
                 placeholder:"Unesite broj telefona",
             },
             icon:<PhoneOutlined className="site-form-item-icon" />
@@ -81,9 +81,36 @@ const CreateClientForm = ({onFinish,handleSubmit,errors,control}) => {
             label:'Email',
             required:true,
             input_params:{
+                disabled:disabled,
                 placeholder:"Unesite email",
             },
             icon:<MailOutlined className="site-form-item-icon" />
+        }} errors={errors} control={control}/>
+
+        <FormInput data={{
+            type:INPUT_TYPE.DATE,
+            name:'date_first_reservation',
+            label:'Datum prve rezervacije',
+            required:true,
+            input_params:{
+                style:{width:'100%'},
+                disabled:disabled,
+                placeholder:"Izaberite datum prve rezervacije",
+                allowClear:true
+            }
+        }} errors={errors} control={control}/>
+
+        <FormInput data={{
+            type:INPUT_TYPE.DATE,
+            name:'date_last_reservation',
+            label:'Datum zadnje rezervacije',
+            required:true,
+            input_params:{
+                style:{width:'100%'},
+                disabled:disabled,
+                placeholder:"Izaberite datum zadnje rezervacije",
+                allowClear:true
+            }
         }} errors={errors} control={control}/>
 
         <FormInput data={{
@@ -92,19 +119,13 @@ const CreateClientForm = ({onFinish,handleSubmit,errors,control}) => {
             label:'Napomena',
             required:false,
             input_params:{
+                disabled:disabled,
                 placeholder:"Napomena...",
                 allowClear:true
             }
         }} errors={errors} control={control}/>
 
-        <Button type="primary" icon={<SaveOutlined />} htmlType="submit" className="login-form-button">
-            Sacuvaj
-        </Button>
-        <Button className="login-form-button" style={{marginLeft:15}}>
-           <Link to="/clients">Odustani</Link>
-        </Button>
-
     </Form>
 }
 
-export default CreateClientForm;
+export default ClientForm;

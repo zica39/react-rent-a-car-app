@@ -8,10 +8,11 @@ import Login from "./pages/login/Login";
 import NotFound from "./pages/notFound/NotFound";
 
 import Clients from "./pages/clients/Clients";
-import CreateClient from "./pages/clients/CreateClient";
 
 import Cars from "./pages/cars/Cars";
+
 import Reservations from "./pages/reservations/Reservations";
+import CreateReservation from "./pages/reservations/CreateReservation";
 
 function App() {
 
@@ -23,9 +24,9 @@ function App() {
             <div className="App">
                 <Switch>
                     <PrivateRoute path="/clients" exact component={Clients} isPrivate role={ROLES.EMPLOYEE}/>
-                    <PrivateRoute path="/clients/create" exact component={CreateClient} isPrivate role={ROLES.EMPLOYEE}/>
                     <PrivateRoute path="/cars" exact component={Cars} isPrivate role={ROLES.EMPLOYEE} />
                     <PrivateRoute path="/reservations" exact component={Reservations} isPrivate role={ROLES.EMPLOYEE} />
+                    <PrivateRoute path="/reservations/create" exact component={CreateReservation} isPrivate role={ROLES.EMPLOYEE}/>
 
                     <PrivateRoute exact path="/login" component={Login}/>
                     {/*<PrivateRoute path="/register" component={Register}/>*/}

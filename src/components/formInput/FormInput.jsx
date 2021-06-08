@@ -1,5 +1,5 @@
 import {Controller} from "react-hook-form";
-import {Form, Input, InputNumber, Select, Tooltip} from "antd";
+import {Form, Input, InputNumber, Select, Tooltip,DatePicker} from "antd";
 import {InfoCircleOutlined} from "@ant-design/icons";
 import React from "react";
 import {INPUT_TYPE} from "../../constants/config";
@@ -67,6 +67,12 @@ const FormInput = ({data:{name,type,
                                     <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
                                 </Tooltip>:''
                             }
+                        />
+                    case INPUT_TYPE.DATE:
+                        return <DatePicker
+                            {...field}
+                            id={name}
+                            {...input_params}
                         />
                         default:
                             return <></>
