@@ -3,7 +3,7 @@ import {Controller} from "react-hook-form";
 import {LockOutlined, MailOutlined} from "@ant-design/icons";
 import React from "react";
 
-const LoginForm = ({onFinish,handleSubmit,errors,control}) => {
+const LoginForm = ({onFinish,handleSubmit,errors,control,loading}) => {
 
     return <Form
         name="normal_login"
@@ -73,7 +73,7 @@ const LoginForm = ({onFinish,handleSubmit,errors,control}) => {
         </Form.Item>
 
         <Form.Item>
-            <Button type="primary" htmlType="submit" className="login-form-button">
+            <Button loading={loading} type="primary" htmlType="submit" className="login-form-button">
                 Log in
             </Button>
             {/*Or <a href="">register now!</a>*/}

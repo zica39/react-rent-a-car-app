@@ -31,6 +31,10 @@ export const removeAuth = () => {
     localStorage.removeItem('auth');
 }
 
+export const getToken = () =>{
+    return 'Bearer '+auth()?.['token'];
+}
+
 export const toTitleCase = (phrase) => {
     return phrase
         .toLowerCase()
@@ -57,10 +61,11 @@ export const success = (msg) => {
     });
 }
 
-export const error = (title,msg) =>  {
+export const error = (title,msg,onOk) =>  {
     Modal.error({
         title: title,
         content: msg,
+        onOk:onOk
     });
 }
 

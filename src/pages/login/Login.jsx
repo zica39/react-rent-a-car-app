@@ -1,7 +1,7 @@
-import React from 'react';
+import React,{useState} from 'react';
 import { Row,Col, Typography } from 'antd';
 import { UserOutlined} from '@ant-design/icons';
-import {saveAuth} from "../../functions/tools";
+import {saveAuth,error} from "../../functions/tools";
 import {useHistory} from 'react-router-dom';
 import {ROLES} from "../../constants/config";
 
@@ -10,6 +10,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import LoginForm from "./components/loginForm/LoginForm";
+import{login,me} from "../../services/auth";
 
 const schema = yup.object().shape({
     email: yup.string().email().required(),
@@ -33,16 +34,40 @@ const Login = () => {
         }
     });
 
+    const [isLoading,setIsLoading] = useState(false);
     const history = useHistory();
 
     const onFinish = values => {
-        console.log('Received values of form: ', values);
-        saveAuth({
-            name:values.email,
-            token:'BJDFJDKFJGKJDSHFDKFD',
-            role: values?.remember?ROLES.EMPLOYEE:ROLES.CLIENT
-        });
-        history.push('/');
+        console.log(values);
+        setIsLoading(true);
+        login({
+            email:values.email,
+            password:values.password
+        }).then(res=>{
+          let token =  res?.data?.access_token;
+          if(token){
+              me(token).then(res=>{
+                  saveAuth({
+                      name:res?.data?.name,
+                      role:res?.data?.role_id === 1? ROLES.EMPLOYEE:ROLES.CLIENT,
+                      token:token
+                  });
+                  history.push('/');
+              }).catch(err=>{
+                  error(err.name,err?.response?.statusText);
+                  setIsLoading(false);
+              })
+          }else{
+              error('Gresk','Problemi sa internet konekcijom');
+          }
+        }).catch(err=>{
+            console.log(err?.response);
+            console.log(err?.name);
+            console.log(err?.message)
+            console.log(err?.status);//401 ....
+            error(err.name,err?.response?.statusText);
+            setIsLoading(false);
+        })
 
     };
 
@@ -50,7 +75,7 @@ const Login = () => {
         <Row type="flex" justify="center" align="center">
             <Col span={8}  style={{padding:30,marginTop:'10%',boxShadow:'1px 1px 3px black'}}>
                 <Typography.Title level={2}><UserOutlined/>Login</Typography.Title>
-                <LoginForm onFinish={onFinish} errors={errors} control={control} handleSubmit={handleSubmit} />
+                <LoginForm loading={isLoading} onFinish={onFinish} errors={errors} control={control} handleSubmit={handleSubmit} />
             </Col>
         </Row>
     );
