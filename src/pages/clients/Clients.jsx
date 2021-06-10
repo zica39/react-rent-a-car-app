@@ -8,6 +8,8 @@ import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import ClientModal from "./components/clientModal/ClientModal";
 import {pullData, showConfirm} from "../../functions/tools";
+import {useQuery, useQueryClient} from "react-query";
+import {getClients} from "../../services/clients";
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 const passportRegExp = new RegExp("^[A-Z0-9.,/ $@()]+$");
@@ -67,7 +69,11 @@ const Clients = () => {
         },
     ];
 
-    const data = [];
+    const queryClient = useQueryClient();
+    const { isLoading, isError, data, error } = useQuery(['clients',{page:0,filter:0,size:0}],  getClients);
+
+    console.log(data);
+    /*const data = [];
     for (let i = 0; i < 8; i++) {
         data.push({
             key: i,
@@ -78,7 +84,7 @@ const Clients = () => {
             date_first_reservation:'13/03/2019',
             date_last_reservation: '14/04/2020'
         });
-    }
+    }*/
 
     const {formState: { errors }, handleSubmit, control,reset} = useForm({
         mode: 'onSubmit',
@@ -120,7 +126,7 @@ const Clients = () => {
                    form={{errors:errors,handleSubmit:handleSubmit,control:control,reset:reset}}
                />
            </Space>
-       <Table columns={columns} dataSource={data}  onRow={onRowClick} className='hover-row' bordered={true} pagination={false} scroll={{ y: window.innerHeight-250 }} />
+       <Table loading={isLoading} columns={columns} dataSource={data?data.data.data:[]}  onRow={onRowClick} className='hover-row' bordered={true} pagination={false} scroll={{ y: window.innerHeight-250 }} />
        </>)
 
 }

@@ -3,6 +3,21 @@ import {Form} from "antd";
 import FormInput from "../../../../components/formInput/FormInput";
 import {INPUT_TYPE,CAR_MIN_YEAR} from "../../../../constants/config";
 
+const car_types = [
+    {
+        label:'Small',
+        value:1
+    },
+    {
+        label:'Medium',
+        value:2
+    },
+    {
+        label:"Premium",
+        value:3
+    }
+
+]
 const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
 
     return  <Form
@@ -17,7 +32,7 @@ const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
     >
         <FormInput data={{
             type: INPUT_TYPE.TEXT,
-            name:'car_plates',
+            name:'plate_no',
             label:'Tablice',
             required:true,
             input_params:{
@@ -29,7 +44,7 @@ const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
 
         <FormInput data={{
             type: INPUT_TYPE.NUMBER,
-            name:'year',
+            name:'production_year',
             label:'Godina',
             required:true,
             input_params: {
@@ -44,19 +59,19 @@ const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
 
         <FormInput data={{
             type:INPUT_TYPE.SELECT,
-            name:'type',
+            name:'car_type_id',
             label:'Tip vozila',
             required:true,
             input_params:{
                 placeholder:"Izaberite tip vozila",
                 disabled:disabled
             },
-            options:[{label: 'Luksuzno',value: '1'},{label: 'Sportsko',value:2}]
+            options:car_types
         }} errors={errors} control={control}/>
 
         <FormInput data={{
             type: INPUT_TYPE.NUMBER,
-            name:'seats_number',
+            name:'no_of_seats',
             label:'Broj sjedista',
             required:true,
             disabled:disabled,
@@ -73,7 +88,7 @@ const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
 
         <FormInput data={{
             type: INPUT_TYPE.NUMBER,
-            name:'price',
+            name:'price_per_day',
             label:'Cijena',
             required:true,
             disabled:disabled,
@@ -91,7 +106,7 @@ const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
 
         <FormInput data={{
             type: INPUT_TYPE.TEXTAREA,
-            name:'remark',
+            name:'remarks',
             label:'Napomena',
             required:false,
             input_params:{

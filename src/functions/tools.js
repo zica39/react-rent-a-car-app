@@ -85,3 +85,9 @@ export const showConfirm = (title,icon,content,onOk) => {
         onCancel() {},
     });
 }
+
+export const insertKey = (data) => {
+    return data.map((el,index) =>{
+        return {...el,key:index};
+    })
+}

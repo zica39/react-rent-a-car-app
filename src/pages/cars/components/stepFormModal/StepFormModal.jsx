@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Modal, Button,Steps,message } from 'antd';
 import {SaveOutlined,ArrowRightOutlined,ArrowLeftOutlined} from "@ant-design/icons";
 import CarForm from "../carForm/CarForm";
-import {FORM_MODE} from "../../../../constants/config";
+import {FILE_URL, FORM_MODE} from "../../../../constants/config";
 import './style.css';
 import ImageUpload from "../imageUpload/ImageUpload";
+import {createVehicle, getVehicle, updateVehicle} from "../../../../services/cars";
 
 const { Step } = Steps;
 const steps = [
@@ -22,8 +23,11 @@ const steps = [
     },
 ];
 
-const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubmit}}) => {
+const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubmit,reset},queryClient}) => {
     const [isLoading,setIsLoading] = useState(false);
+    const [fileList, setFileList] = useState([]);
+    const[formData,setFormData] = useState({});
+
     const [current, setCurrent] = useState(0);
 
     const next = () => {
@@ -34,9 +38,60 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
         setCurrent(current - 1);
     };
 
+
+        useEffect(()=>{
+            if(openModal.open && (openModal.mode === FORM_MODE.EDIT || openModal.mode === FORM_MODE.CREATE)){
+                setCurrent(0);
+                if(openModal.id === 0) reset({
+                    plate_no:'',
+                    production_year:'',
+                    no_of_seats:'',
+                    price_per_day:0,
+                    remarks:''
+                });else{
+                    reset({})
+                    getVehicle(openModal.id).then(res=>{
+                        let data = res?.data;
+                        console.log(data);
+                        reset({
+                            plate_no:data.plate_no,
+                            production_year:data.production_year,
+                            car_type_id:data.car_type_id,
+                            no_of_seats:data.no_of_seats,
+                            price_per_day:data.price_per_day,
+                            remarks:data.remarks
+                        })
+                       setFileList(data.photos.map(e=>{return {'uid': e.id,'status': 'done','url': FILE_URL+e.photo }}))
+                    }).catch(err=>{
+                        //console.log(err?.response?.statusText);
+                         message.error(err?.response?.statusText);
+                    })
+                }
+            }
+        },[openModal])
+
     const onSave = () => {
-        message.success('Processing complete!');
-       // setOpenModal({...openModal,open:false});
+            console.log(formData)
+            setIsLoading(true);
+        if(!openModal.id){
+            createVehicle(formData).then(res=>{
+                queryClient.invalidateQueries('cars');
+                message.success(res.statusText);
+                setOpenModal({});
+            }).catch(err=>{
+                message.error(err?.response?.statusText);
+                setIsLoading(false);
+            })
+        }else {
+            updateVehicle(openModal.id, formData).then(res=>{
+                queryClient.invalidateQueries('cars');
+                message.success(res.statusText);
+                setOpenModal({});
+            }).catch(err=>{
+                message.error(err?.response?.statusText);
+                setIsLoading(false);
+            })
+        }
     };
 
     const handleCancel = () => {
@@ -44,8 +99,14 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
             setOpenModal({...openModal,open:false});
     };
 
-    const onFinish = (data) => {
-        console.log(data)
+    const onFinishStep1 = (data) => {
+        console.log(data);
+        data.production_year = String(data.production_year);
+        setFormData({...data});
+        next();
+    }
+    const onFinishStep2 = (data) => {
+        setFormData({...formData,photos:[]});
         next();
     }
 
@@ -70,9 +131,9 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
                 <div className="steps-content">
                     {
                         current === 0?
-                            <CarForm disabled={openModal.mode===FORM_MODE.SHOW} control={control} errors={errors} handleSubmit={handleSubmit} onFinish={onFinish} />:
+                            <CarForm disabled={openModal.mode===FORM_MODE.SHOW} control={control} errors={errors} handleSubmit={handleSubmit} onFinish={onFinishStep1} />:
                         current === 1?
-                            <ImageUpload />:''
+                            <ImageUpload fileList={fileList} setFileList={setFileList} />:''
                     }
                 </div>
                 <div className="steps-action">
@@ -85,7 +146,7 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
                         <Button loading={isLoading} type="primary" form="edit-car-form" htmlType="submit" className="login-form-button">
                             Next <ArrowRightOutlined />
                         </Button>:
-                        <Button type="primary" onClick={() => next()}>
+                        <Button type="primary" onClick={onFinishStep2}>
                             Next <ArrowRightOutlined />
                         </Button>
                     )}
