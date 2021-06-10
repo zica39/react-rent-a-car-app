@@ -22,6 +22,21 @@ export const INPUT_TYPE = {
     DATE:5
 }
 
+export const CAR_TYPES = [
+    {
+        label:'Small',
+        value:1
+    },
+    {
+        label:'Medium',
+        value:2
+    },
+    {
+        label:"Premium",
+        value:3
+    }
+];
+
 export const CAR_MIN_YEAR = 1990;
 export const BASE_URL = 'http://localhost:8000/api/';
 export const FILE_URL = 'http://localhost:8000/';

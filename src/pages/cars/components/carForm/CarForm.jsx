@@ -1,23 +1,9 @@
 import React from "react";
 import {Form} from "antd";
 import FormInput from "../../../../components/formInput/FormInput";
-import {INPUT_TYPE,CAR_MIN_YEAR} from "../../../../constants/config";
+import {INPUT_TYPE,CAR_MIN_YEAR,CAR_TYPES} from "../../../../constants/config";
 
-const car_types = [
-    {
-        label:'Small',
-        value:1
-    },
-    {
-        label:'Medium',
-        value:2
-    },
-    {
-        label:"Premium",
-        value:3
-    }
 
-]
 const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
 
     return  <Form
@@ -66,7 +52,7 @@ const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
                 placeholder:"Izaberite tip vozila",
                 disabled:disabled
             },
-            options:car_types
+            options:CAR_TYPES
         }} errors={errors} control={control}/>
 
         <FormInput data={{

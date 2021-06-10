@@ -11,6 +11,18 @@ export const getVehicles = (search) => {
     });
 }
 
+export const getAvailableVehicles = (start_date,end_date,car_type) => {
+    let params = {}
+    params.car_type = car_type;
+    params.start_date = start_date?start_date:'1900-01-01';
+    params.end_date = end_date?end_date:'2100-01-01';
+
+    return axiosInstance.get('/cars-available',{
+        params:params,
+        headers:{'Authorization': getToken()}
+    });
+}
+
 export const createVehicle = (data) => {
     return axiosInstance.post('/vehicle',data,{
         headers:{'Authorization': getToken()},
@@ -19,7 +31,10 @@ export const createVehicle = (data) => {
 
 export const updateVehicle = (id,data) => {
     return axiosInstance.post('/vehicle-update/'+id,data,{
-        headers:{'Authorization': getToken()},
+        headers:{
+            'Authorization': getToken(),
+            'Accept':'application/json'
+        },
     });
 }
 

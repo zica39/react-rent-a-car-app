@@ -1,12 +1,27 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Form} from "antd";
 import FormInput from "../../../../components/formInput/FormInput";
 import {INPUT_TYPE} from "../../../../constants/config";
+import {getLocations} from "../../../../services/reservations";
+import {getClients} from "../../../../services/clients";
 
 const CreateForm = ({onFinish,handleSubmit,errors,control}) => {
 
+    const [locationOptions,setLocationOptions] = useState([]);
+    const [clientOptions,setClientOptions] = useState([]);
+    useEffect(()=>{
+        getLocations().then(res=>{
+            let data = res?.data;
+            setLocationOptions(data.map(e=>Object({value:e.id,label:e.name})));
+        });
+        getClients().then(res=>{
+            let data=res?.data?.data;
+            setClientOptions(data.map(e=>Object({value:e.id,label:e.name})));
+        })
+    },[]);
+
     return  <Form
-        id="edit-reservation-form"
+        id="create-reservation-form"
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 17 }}
         layout="horizontal"
@@ -15,21 +30,31 @@ const CreateForm = ({onFinish,handleSubmit,errors,control}) => {
         onValuesChange={()=>{}}
         size="default"
     >
+        <FormInput data={{
+            type: INPUT_TYPE.TEXT,
+            name:'vehicle',
+            label:'Vozilo',
+            required:false,
+            input_params:{
+                disabled:true,
+                style:{width:'100%',color:'black'}
+            },
+        }} errors={errors} control={control}/>
 
         <FormInput data={{
             type:INPUT_TYPE.SELECT,
-            name:'client',
+            name:'client_id',
             label:'Klijent',
             required:true,
             input_params:{
                 placeholder:"Izaberite klijenta"
             },
-            options:[{label: 'Marko Markovic',value: '1'},{label: 'Janko Jankovic',value: '2'}]
+            options:clientOptions
         }} errors={errors} control={control}/>
 
         <FormInput data={{
             type:INPUT_TYPE.DATE,
-            name:'date_from',
+            name:'from_date',
             label:'Datum od',
             required:true,
             input_params:{
@@ -41,7 +66,7 @@ const CreateForm = ({onFinish,handleSubmit,errors,control}) => {
 
         <FormInput data={{
             type:INPUT_TYPE.DATE,
-            name:'date_to',
+            name:'to_date',
             label:'Datum do',
             required:true,
             input_params:{
@@ -53,24 +78,24 @@ const CreateForm = ({onFinish,handleSubmit,errors,control}) => {
 
         <FormInput data={{
             type:INPUT_TYPE.SELECT,
-            name:'pick_up_location',
+            name:'rent_location_id',
             label:'Lokacija preuzimanja',
             required:true,
             input_params:{
                 placeholder:"Izaberite lokaciju preuzimanja"
             },
-            options:[{label: 'Aerodrom Podgorica',value: '1'},{label: 'Aerodrom Tivat',value: '2'}]
+            options:locationOptions
         }} errors={errors} control={control}/>
 
         <FormInput data={{
             type:INPUT_TYPE.SELECT,
-            name:'return_location',
+            name:'return_location_id',
             label:'Lokacija vracanja',
             required:true,
             input_params:{
                 placeholder:"Izaberite lokaciju vracanja"
             },
-            options:[{label: 'Aerodrom Podgorica',value: '1'},{label: 'Aerodrom Tivat',value: '2'}]
+            options:locationOptions
         }} errors={errors} control={control}/>
         <FormInput data={{
             type: INPUT_TYPE.NUMBER,
@@ -78,7 +103,7 @@ const CreateForm = ({onFinish,handleSubmit,errors,control}) => {
             label:'Ukupna cijena',
             /* required:true,*/
             input_params:{
-                disabled:true,
+                readOnly:true,
                 min:0,
                 formatter:value => `${value}€`,
                 parser:value => value.replace('€', ''),
