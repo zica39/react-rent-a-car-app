@@ -1,13 +1,22 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Form} from "antd";
 import FormInput from "../../../../components/formInput/FormInput";
 import {INPUT_TYPE} from "../../../../constants/config";
 import {IdcardOutlined, MailOutlined, PhoneOutlined} from "@ant-design/icons";
+import {getCountries} from "../../../../services/clients";
 
 const ClientForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
 
+    const [countryOptions,setCountryOptions] = useState([]);
+    useEffect(()=>{
+        getCountries().then(res=>{
+            let data = res?.data;
+            setCountryOptions(data.map(e=>Object({value:e.id,label:e.name})))
+        })
+    },[]);
+
     return  <Form
-        id="edit-reservation-form"
+        id="client-form"
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 17 }}
         layout="horizontal"
@@ -18,41 +27,30 @@ const ClientForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
     >
         <FormInput data={{
             type:INPUT_TYPE.TEXT,
-            name:'firstname',
+            name:'name',
             label:'Ime',
             required:true,
             input_params:{
                 disabled:disabled,
-                placeholder:"Unesite ime"
-            }
-        }} errors={errors} control={control}/>
-
-        <FormInput data={{
-            type:INPUT_TYPE.TEXT,
-            name:'lastname',
-            label:'Prezime',
-            required:true,
-            input_params:{
-                disabled:disabled,
-                placeholder:"Unesite prezime"
+                placeholder:"Unesite ime i prezime"
             }
         }} errors={errors} control={control}/>
 
         <FormInput data={{
             type:INPUT_TYPE.SELECT,
-            name:'country',
+            name:'country_id',
             label:'Drzava',
             required:true,
             input_params:{
                 disabled:disabled,
                 placeholder:"Izaberite drzavu"
             },
-            options:[{label:'-Izaberite drzavu-',value:''},{label: 'Crna Gora',value: '1'}]
+            options:countryOptions
         }} errors={errors} control={control}/>
 
         <FormInput data={{
             type:INPUT_TYPE.TEXT,
-            name:'id_card',
+            name:'identification_document_no',
             label:'Broj LK/Pasosa',
             required:true,
             input_params:{
@@ -65,7 +63,7 @@ const ClientForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
 
         <FormInput data={{
             type:INPUT_TYPE.TEXT,
-            name:'phone',
+            name:'phone_no',
             label:'Telefon',
             required:true,
             input_params:{
@@ -87,9 +85,9 @@ const ClientForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
             icon:<MailOutlined className="site-form-item-icon" />
         }} errors={errors} control={control}/>
 
-        <FormInput data={{
+        {/*<FormInput data={{
             type:INPUT_TYPE.DATE,
-            name:'date_first_reservation',
+            name:'date_of_first_reservation',
             label:'Datum prve rezervacije',
             required:true,
             input_params:{
@@ -102,7 +100,7 @@ const ClientForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
 
         <FormInput data={{
             type:INPUT_TYPE.DATE,
-            name:'date_last_reservation',
+            name:'date_of_last_reservation',
             label:'Datum zadnje rezervacije',
             required:true,
             input_params:{
@@ -111,11 +109,11 @@ const ClientForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
                 placeholder:"Izaberite datum zadnje rezervacije",
                 allowClear:true
             }
-        }} errors={errors} control={control}/>
+        }} errors={errors} control={control}/>*/}
 
         <FormInput data={{
             type:INPUT_TYPE.TEXTAREA,
-            name:'remark',
+            name:'remarks',
             label:'Napomena',
             required:false,
             input_params:{

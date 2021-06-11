@@ -1,9 +1,10 @@
 import axiosInstance from "./axios";
 import {getToken} from "../functions/tools";
 
-export const getReservations = (search) => {
+export const getReservations = (search,page) => {
     let params = {}
     if(search)params.search = search;
+    if(page)params.page=page;
 
     return axiosInstance.get('/reservations',{
         params:params,

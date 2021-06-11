@@ -1,6 +1,5 @@
-import { Table, Space, Button,Input } from 'antd';
+import {Table, Space, Button, Input, message} from 'antd';
 import {DeleteOutlined, EditOutlined, UserAddOutlined} from '@ant-design/icons';
-import {useHistory} from 'react-router-dom';
 import {useEffect, useState} from "react";
 import {FORM_MODE} from "../../constants/config";
 import * as yup from "yup";
@@ -15,22 +14,18 @@ const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2
 const passportRegExp = new RegExp("^[A-Z0-9.,/ $@()]+$");
 const schema = yup.object().shape({
     email: yup.string().email().required(),
-    firstname:yup.string().min(3).max(255),
-    lastname:yup.string().min(3).max(255),
-    country:yup.string().required(),
-    id_card:yup.string().min(9).max(9).matches(passportRegExp, 'Passport is not yet valid.'),
-    phone:yup.string().matches(phoneRegExp, 'Phone number is not valid'),
-    date_first_reservation:yup.date().required(),
-    date_last_reservation:yup.date().required(),
-    remark:yup.string().max(500)
+    name:yup.string().min(3).max(255),
+    country_id:yup.number().integer().required(),
+    identification_document_no:yup.string().min(9).max(9).matches(passportRegExp, 'Passport is not yet valid.'),
+    phone_no:yup.string().matches(phoneRegExp, 'Phone number is not valid'),
+    remarks:yup.string().max(500)
 });
 const NEW_CLIENT = {open:true,title:'Kreiraj novog klijenta',mode:FORM_MODE.CREATE,id:0};
 
 const Clients = () => {
 
-
-    const history = useHistory();
     const[openModal,setOpenModal] = useState({});
+    const[search,setSearch] = useState('');
     const columns = [
         {
             title: 'Ime',
@@ -38,11 +33,11 @@ const Clients = () => {
         },
         {
             title: 'Broj lične karte/pasoša',
-            dataIndex: 'id_number',
+            dataIndex: 'identification_document_no',
         },
         {
             title: 'Telefon',
-            dataIndex: 'phone',
+            dataIndex: 'phone_no',
         },
         {
             title: 'Email',
@@ -50,56 +45,45 @@ const Clients = () => {
         },
         {
             title: 'Datum prve rezervacije',
-            dataIndex: 'date_first_reservation',
+            dataIndex: 'date_of_first_reservation',
         },
         {
             title: 'Datum zadnje rezervacije',
-            dataIndex: 'date_last_reservation',
+            dataIndex: 'date_of_last_reservation',
         },
+        /*{
+            title: 'Napomena',
+            dataIndex: 'remarks',
+        },*/
         {
             title: 'Action',
             key: 'action',
             render: (text, record) => (
                 // record.id
                 <Space size="middle">
-                    <Button onClick={(e)=>{e.stopPropagation();setOpenModal(NEW_CLIENT); }} icon={<EditOutlined />}/>
-                    <Button onClick={(e)=>{e.stopPropagation();showConfirm('Obrisi klienta',<DeleteOutlined />,'Da li ste sigurni?')}} icon={<DeleteOutlined />}/>
+                    <Button disabled={true} onClick={(e)=>{e.stopPropagation();setOpenModal(NEW_CLIENT); }} icon={<EditOutlined />}/>
+                    <Button disabled={true} onClick={(e)=>{e.stopPropagation();showConfirm('Obrisi klienta',<DeleteOutlined />,'Da li ste sigurni?')}} icon={<DeleteOutlined />}/>
                 </Space>
             ),
         },
     ];
 
     const queryClient = useQueryClient();
-    const { isLoading, isError, data, error } = useQuery(['clients',{page:0,filter:0,size:0}],  getClients);
+    const { isLoading, isError, data, error } = useQuery(['clients',{search:search}],  ()=>getClients(search));
 
-    console.log(data);
-    /*const data = [];
-    for (let i = 0; i < 8; i++) {
-        data.push({
-            key: i,
-            name:'Marko Markovic',
-            id_number: `84574858694`,
-            phone: "069888999",
-            email: `user@user.com`,
-            date_first_reservation:'13/03/2019',
-            date_last_reservation: '14/04/2020'
-        });
-    }*/
+    if(isError)message.error(error);
+   // console.log(data);
 
     const {formState: { errors }, handleSubmit, control,reset} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onChange',
         resolver: yupResolver(schema),
         defaultValues:{
-            firstname:'',
-            lastname:'',
-            country: '',
-            id_card:'',
-            phone:'',
-            email:'',
-            remark:'',
-            date_first_reservation:'',
-            date_last_reservation:''
+            email: '',
+            name:'',
+            identification_document_no:'',
+            phone_no:'',
+            remarks:''
         }
     });
     const onRowClick = (record) => {
@@ -118,12 +102,14 @@ const Clients = () => {
    return ( <>
            <Space style={{ marginTop: 10,display:'flex',justifyContent:'space-between' }}>
                <Button icon={<UserAddOutlined />} onClick={()=>setOpenModal(NEW_CLIENT)}>Dodaj klijenta</Button>
-               <Input.Search placeholder="Pretrazi klienta" allowClear onSearch={"onSearch"} style={{ width: 200 }} />
+               <Input.Search placeholder="Pretrazi klienta" allowClear onSearch={(e)=>setSearch(e)} style={{ width: 200 }} />
+
                <ClientModal
                    openModal={openModal}
                    setOpenModal={setOpenModal}
                    title={openModal.title}
                    form={{errors:errors,handleSubmit:handleSubmit,control:control,reset:reset}}
+                   queryClient={queryClient}
                />
            </Space>
        <Table loading={isLoading} columns={columns} dataSource={data?data.data.data:[]}  onRow={onRowClick} className='hover-row' bordered={true} pagination={false} scroll={{ y: window.innerHeight-250 }} />

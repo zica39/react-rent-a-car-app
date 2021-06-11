@@ -1,4 +1,5 @@
 import { Modal } from 'antd';
+import {RESERVATION_STATUS} from "../constants/config";
 
 export const storeData = (name,data) =>{
     localStorage.setItem(name,JSON.stringify(data));
@@ -90,4 +91,18 @@ export const insertKey = (data) => {
     return data.map((el,index) =>{
         return {...el,key:index};
     })
+}
+
+const getValidDate = function(d){ return new Date(d) }
+
+const validateDateBetweenTwoDates = (fromDate,toDate,givenDate) => {
+    return getValidDate(givenDate) <= getValidDate(toDate) && getValidDate(givenDate) >= getValidDate(fromDate);
+}
+
+export const getReservationStatus = (fromDate,toDate,givenDate) =>{
+    if(validateDateBetweenTwoDates(fromDate,toDate,givenDate)){
+        return RESERVATION_STATUS.PRESENT;
+    }else {
+        return getValidDate(givenDate)>getValidDate(toDate)?RESERVATION_STATUS.PREVIOUS:RESERVATION_STATUS.FUTURE;
+    }
 }

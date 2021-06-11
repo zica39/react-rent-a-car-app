@@ -33,6 +33,7 @@ const CreateModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
         createReservation(formData).then(res=>{
             queryClient.invalidateQueries('cars-available');
             message.success(res?.statusText);
+            setIsLoading(false);
             setOpenModal({});
         }).catch(err=>{
             message.error(err?.response?.statusText);

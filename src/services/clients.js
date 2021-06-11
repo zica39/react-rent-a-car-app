@@ -10,3 +10,15 @@ export const getClients = (search) => {
         headers:{'Authorization': getToken()}
     });
 }
+
+export const createClient = (data) => {
+    return axiosInstance.post('/create-client',data,{
+        headers:{'Authorization': getToken()},
+    });
+}
+
+export const getCountries = () => {
+    return axiosInstance.get('/countries',{
+        headers:{'Authorization': getToken()}
+    });
+}
