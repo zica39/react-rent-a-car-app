@@ -74,6 +74,18 @@ const FormInput = ({data:{name,type,
                             id={name}
                             {...input_params}
                         />
+                    case INPUT_TYPE.PASSWORD:
+                        return <Input.Password
+                            {...field}
+                            prefix={icon?icon:''}
+                            {...input_params}
+                            id={name}
+                            suffix={tooltip?
+                                <Tooltip title={tooltip?tooltip:''}>
+                                    <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                                </Tooltip>:''
+                            }
+                        />
                         default:
                             return <></>
             }

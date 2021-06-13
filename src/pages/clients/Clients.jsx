@@ -1,4 +1,5 @@
-import {Table, Space, Button, Input, message} from 'antd';
+import {Space, Button, Input, message} from 'antd';
+import { InfinityTable  as Table } from 'antd-table-infinity';
 import {DeleteOutlined, EditOutlined, UserAddOutlined} from '@ant-design/icons';
 import {useEffect, useState} from "react";
 import {FORM_MODE} from "../../constants/config";
@@ -6,9 +7,9 @@ import * as yup from "yup";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import ClientModal from "./components/clientModal/ClientModal";
-import {pullData, showConfirm} from "../../functions/tools";
-import {useQuery, useQueryClient} from "react-query";
-import {getClients} from "../../services/clients";
+import {concatData, concatData1, insertKey, pullData, showConfirm} from "../../functions/tools";
+import {useInfiniteQuery, useQuery, useQueryClient} from "react-query";
+import {getClients, getClients1, getClients2} from "../../services/clients";
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 const passportRegExp = new RegExp("^[A-Z0-9.,/ $@()]+$");
@@ -69,10 +70,28 @@ const Clients = () => {
     ];
 
     const queryClient = useQueryClient();
-    const { isLoading, isError, data, error } = useQuery(['clients',{search:search}],  ()=>getClients(search));
-
+    const {
+        data,
+        error,
+        isError,
+        fetchNextPage,
+        hasNextPage,
+        isFetching,
+        isFetchingNextPage,
+        status }= useInfiniteQuery(['clients', search], getClients1, {
+        getNextPageParam: ({ page, last_page }) => {
+            if (page < last_page) {
+                return page + 1;
+            }
+            return false
+        },
+    });
     if(isError)message.error(error);
-   // console.log(data);
+   // console.log((data))
+
+    const handleFetch = () => {
+        if(hasNextPage)fetchNextPage();
+    };
 
     const {formState: { errors }, handleSubmit, control,reset} = useForm({
         mode: 'onSubmit',
@@ -99,21 +118,32 @@ const Clients = () => {
         if(pullData('open_modal'))setOpenModal(NEW_CLIENT);
     },[]);
 
-   return ( <>
-           <Space style={{ marginTop: 10,display:'flex',justifyContent:'space-between' }}>
-               <Button icon={<UserAddOutlined />} onClick={()=>setOpenModal(NEW_CLIENT)}>Dodaj klijenta</Button>
-               <Input.Search placeholder="Pretrazi klienta" allowClear onSearch={(e)=>setSearch(e)} style={{ width: 200 }} />
-
-               <ClientModal
-                   openModal={openModal}
-                   setOpenModal={setOpenModal}
-                   title={openModal.title}
-                   form={{errors:errors,handleSubmit:handleSubmit,control:control,reset:reset}}
-                   queryClient={queryClient}
-               />
-           </Space>
-       <Table loading={isLoading} columns={columns} dataSource={data?data.data.data:[]}  onRow={onRowClick} className='hover-row' bordered={true} pagination={false} scroll={{ y: window.innerHeight-250 }} />
-       </>)
+    return ( <>
+        <Space style={{ marginTop: 10,display:'flex',justifyContent:'space-between' }}>
+            <Button icon={<UserAddOutlined />} onClick={()=>setOpenModal(NEW_CLIENT)}>Dodaj klijenta</Button>
+            <Input.Search placeholder="Pretrazi klienta" allowClear onSearch={(e)=>{ setSearch(e); }} style={{ width: 200 }} />
+            <ClientModal
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                title={openModal.title}
+                form={{errors:errors,handleSubmit:handleSubmit,control:control,reset:reset}}
+                queryClient={queryClient}
+            />
+        </Space>
+        <Table
+            rowKey="id"
+            loading={isFetchingNextPage}
+            columns={columns}
+            dataSource={concatData1(data)}
+            onFetch={handleFetch}
+            /*pageSize={10}
+            total={data?.pages[0]?.data?.total}*/
+            onRow={onRowClick}
+            className='hover-row'
+            bordered={true}
+            pagination={false}
+            scroll={{ y: window.innerHeight-250 }} />
+    </>)
 
 }
 

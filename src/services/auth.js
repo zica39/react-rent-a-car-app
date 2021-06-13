@@ -16,3 +16,15 @@ export const logout = () =>{
         headers:{'Authorization': getToken()}
     });
 }
+
+export const changePassword = (data) => {
+    return axiosInstance.post('/auth/change-password',data,{
+        headers:{'Authorization': getToken()}
+    });
+}
+
+export const refresh = () => {
+    return axiosInstance.post('/auth/refresh',{},{
+        headers:{'Authorization': getToken()}
+    });
+}

@@ -1,7 +1,7 @@
 import React,{useState} from 'react';
 import { Row,Col, Typography } from 'antd';
 import { UserOutlined} from '@ant-design/icons';
-import {saveAuth,error} from "../../functions/tools";
+import {saveAuth, error, _, getLang} from "../../functions/tools";
 import {useHistory} from 'react-router-dom';
 import {ROLES} from "../../constants/config";
 
@@ -70,11 +70,13 @@ const Login = () => {
         })
 
     };
+    //console.log(_('login','en'))
+    //console.log(getLang())
 
     return (
         <Row type="flex" justify="center" align="center">
             <Col span={8}  style={{padding:30,marginTop:'10%',boxShadow:'1px 1px 3px black'}}>
-                <Typography.Title level={2}><UserOutlined/>Login</Typography.Title>
+                <Typography.Title level={2}><UserOutlined/>{_('login')}</Typography.Title>
                 <LoginForm loading={isLoading} onFinish={onFinish} errors={errors} control={control} handleSubmit={handleSubmit} />
             </Col>
         </Row>

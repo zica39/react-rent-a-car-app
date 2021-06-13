@@ -1,4 +1,3 @@
-import logo from '../../../logo.svg';
 import {getReservations} from "../../../services/reservations";
 import {useQuery} from "react-query";
 import {Pagination, Card, message, Modal, Button,Skeleton} from "antd";

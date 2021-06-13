@@ -14,12 +14,18 @@ export const FORM_MODE = {
     CREATE:3
 }
 
+export const LANGUAGE = {
+    EN:'en',
+    MNE:'mne'
+}
+
 export const INPUT_TYPE = {
     TEXT:1,
     SELECT:2,
     TEXTAREA:3,
     NUMBER:4,
-    DATE:5
+    DATE:5,
+    PASSWORD:6
 }
 
 export const RESERVATION_STATUS = {
@@ -33,6 +39,11 @@ export const STATUS_COLOR = {
     3:'YELLOW'
 }
 
+export const MESSAGE_TYPE = {
+    SUCCESS:1,
+    ERROR:2,
+    WARNING:3
+}
 export const CAR_TYPES = [
     {
         label:'Small',

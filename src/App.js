@@ -29,7 +29,6 @@ function App() {
                     <PrivateRoute path="/reservations/create" exact component={CreateReservation} isPrivate role={ROLES.EMPLOYEE}/>
 
                     <PrivateRoute exact path="/login" component={Login}/>
-                    {/*<PrivateRoute path="/register" component={Register}/>*/}
                     <PrivateRoute exact  path="/"  isPrivate role={ROLES.ANY}/>
                     <Route component={NotFound}  />
                 </Switch>
