@@ -25,7 +25,10 @@ export const getAvailableVehicles = (start_date,end_date,car_type) => {
 
 export const createVehicle = (data) => {
     return axiosInstance.post('/vehicle',data,{
-        headers:{'Authorization': getToken()},
+        headers:{
+            'Authorization': getToken(),
+            'Content-Type': "multipart/form-data; charset=utf-8; boundary=" + Math.random().toString().substr(2)
+        },
     });
 }
 
@@ -33,7 +36,6 @@ export const updateVehicle = (id,data) => {
     return axiosInstance.post('/vehicle-update/'+id,data,{
         headers:{
             'Authorization': getToken(),
-            'Accept':'application/json'
         },
     });
 }
@@ -50,3 +52,8 @@ export const deleteVehicle = (id) => {
     });
 }
 
+export const getVehicleTypes = () => {
+    return axiosInstance.get('/car-types',{
+        headers:{'Authorization': getToken()}
+    });
+}

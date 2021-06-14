@@ -25,7 +25,8 @@ export const INPUT_TYPE = {
     TEXTAREA:3,
     NUMBER:4,
     DATE:5,
-    PASSWORD:6
+    PASSWORD:6,
+    SELECT_ASYNC:7
 }
 
 export const RESERVATION_STATUS = {

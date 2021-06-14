@@ -1,10 +1,19 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Form} from "antd";
 import FormInput from "../../../../components/formInput/FormInput";
-import {INPUT_TYPE,CAR_MIN_YEAR,CAR_TYPES} from "../../../../constants/config";
+import {INPUT_TYPE,CAR_MIN_YEAR} from "../../../../constants/config";
+import {getVehicleTypes} from "../../../../services/cars";
 
 
 const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
+
+    const [carTypeOptions,setCarTypeOptions] = useState([]);
+    useEffect(()=>{
+        getVehicleTypes().then(res=>{
+            let data = res?.data?.data;
+            setCarTypeOptions(data.map(e=>Object({value:e.id,label:e.name})));
+        });
+    },[]);
 
     return  <Form
         id="edit-car-form"
@@ -52,7 +61,7 @@ const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
                 placeholder:"Izaberite tip vozila",
                 disabled:disabled
             },
-            options:CAR_TYPES
+            options:carTypeOptions
         }} errors={errors} control={control}/>
 
         <FormInput data={{

@@ -5,7 +5,7 @@ import CreateForm from "../createForm/CreateForm";
 import moment from "moment";
 import {createReservation} from "../../../../services/reservations";
 
-const CreateModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubmit,reset},queryClient}) => {
+const CreateModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubmit,reset,setValue},queryClient}) => {
     const [isLoading,setIsLoading] = useState(false);
 
     const handleCancel = () => {
@@ -54,7 +54,7 @@ const CreateModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
     return (
         <>
             <Modal title={title} visible={openModal.open} onCancel={handleCancel} footer={footer}>
-                    <CreateForm control={control} errors={errors} handleSubmit={handleSubmit} onFinish={onFinish} />
+                    <CreateForm control={control} errors={errors} setValue={setValue} handleSubmit={handleSubmit} onFinish={onFinish} />
             </Modal>
         </>
     );

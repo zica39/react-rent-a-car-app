@@ -74,7 +74,16 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
             console.log(formData)
             setIsLoading(true);
         if(!openModal.id){
-            createVehicle(formData).then(res=>{
+           let photos = fileList.map(e=>e.originFileObj);
+            const form = new FormData();
+
+            for (let name in formData) {
+                form.append(name, formData[name]);
+            }
+            for(let photo in photos)form.append('photo[]',photo);
+
+            console.log(form)
+            createVehicle(form).then(res=>{
                 queryClient.invalidateQueries('cars');
                 message.success(res.statusText);
                 setOpenModal({});

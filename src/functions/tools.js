@@ -158,3 +158,7 @@ export const concatData1 = (data) => {
     }
     return [].concat.apply([], arrData)
 }
+
+export const dataToOptions = (data) => {
+    return data.map(e=>Object({value:e.id,label:e.name}));
+}

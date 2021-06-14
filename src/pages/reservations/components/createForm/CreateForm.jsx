@@ -3,21 +3,16 @@ import {Form} from "antd";
 import FormInput from "../../../../components/formInput/FormInput";
 import {INPUT_TYPE} from "../../../../constants/config";
 import {getLocations} from "../../../../services/reservations";
-import {getClients} from "../../../../services/clients";
+import {getClientsOptions} from "../../../../services/clients";
 
-const CreateForm = ({onFinish,handleSubmit,errors,control}) => {
+const CreateForm = ({onFinish,handleSubmit,errors,control,setValue}) => {
 
     const [locationOptions,setLocationOptions] = useState([]);
-    const [clientOptions,setClientOptions] = useState([]);
     useEffect(()=>{
         getLocations().then(res=>{
             let data = res?.data;
             setLocationOptions(data.map(e=>Object({value:e.id,label:e.name})));
         });
-        getClients().then(res=>{
-            let data=res?.data?.data;
-            setClientOptions(data.map(e=>Object({value:e.id,label:e.name})));
-        })
     },[]);
 
     return  <Form
@@ -42,15 +37,16 @@ const CreateForm = ({onFinish,handleSubmit,errors,control}) => {
         }} errors={errors} control={control}/>
 
         <FormInput data={{
-            type:INPUT_TYPE.SELECT,
+            type:INPUT_TYPE.SELECT_ASYNC,
             name:'client_id',
             label:'Klijent',
             required:true,
-            input_params:{
-                placeholder:"Izaberite klijenta"
-            },
-            options:clientOptions
-        }} errors={errors} control={control}/>
+            helper_params:{
+                placeholder:"Izaberite klijenta",
+                loadOptions:getClientsOptions,
+                defaultValue:''
+            }
+        }} errors={errors} control={control} setValue={setValue}/>
 
         <FormInput data={{
             type:INPUT_TYPE.DATE,

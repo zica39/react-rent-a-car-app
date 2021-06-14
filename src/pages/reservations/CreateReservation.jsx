@@ -22,7 +22,7 @@ const schema = yup.object().shape({
 });
 const CreateReservation = () => {
 
-    const {formState: { errors }, handleSubmit, control,reset} = useForm({
+    const {formState: { errors }, handleSubmit, control, reset, setValue} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onChange',
         resolver: yupResolver(schema),
@@ -99,7 +99,7 @@ const CreateReservation = () => {
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 title={openModal.title}
-                form={{errors:errors,handleSubmit:handleSubmit,control:control,reset:reset}}
+                form={{errors:errors,handleSubmit:handleSubmit,control:control,reset:reset,setValue:setValue}}
                 queryClient={queryClient}
             />
         </Space>

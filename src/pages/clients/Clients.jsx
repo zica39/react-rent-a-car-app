@@ -2,14 +2,14 @@ import {Space, Button, Input, message} from 'antd';
 import { InfinityTable  as Table } from 'antd-table-infinity';
 import {DeleteOutlined, EditOutlined, UserAddOutlined} from '@ant-design/icons';
 import {useEffect, useState} from "react";
-import {FORM_MODE} from "../../constants/config";
+import {FORM_MODE, MESSAGE_TYPE} from "../../constants/config";
 import * as yup from "yup";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import ClientModal from "./components/clientModal/ClientModal";
-import {concatData, concatData1, insertKey, pullData, showConfirm} from "../../functions/tools";
-import {useInfiniteQuery, useQuery, useQueryClient} from "react-query";
-import {getClients, getClients1, getClients2} from "../../services/clients";
+import {concatData, concatData1, insertKey, pullData, showConfirm, showMessage} from "../../functions/tools";
+import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from "react-query";
+import {getClients,deleteClient} from "../../services/clients";
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 const passportRegExp = new RegExp("^[A-Z0-9.,/ $@()]+$");
@@ -62,8 +62,18 @@ const Clients = () => {
             render: (text, record) => (
                 // record.id
                 <Space size="middle">
-                    <Button disabled={true} onClick={(e)=>{e.stopPropagation();setOpenModal(NEW_CLIENT); }} icon={<EditOutlined />}/>
-                    <Button disabled={true} onClick={(e)=>{e.stopPropagation();showConfirm('Obrisi klienta',<DeleteOutlined />,'Da li ste sigurni?')}} icon={<DeleteOutlined />}/>
+                    <Button onClick={(e)=>{
+                        e.stopPropagation();
+                        setOpenModal({open:true,title:'Izmjeni vozilo',mode:FORM_MODE.EDIT,id:record?.user?.id});
+                    }} icon={<EditOutlined />}/>
+                    <Button onClick={(e)=>{e.stopPropagation();showConfirm('Obrisi klienta',<DeleteOutlined />,'Da li ste sigurni?',()=>{
+                        return new Promise(function(myResolve, myReject) {
+                            deleteMutation.mutate(record?.user?.id,{
+                                onSuccess:res=>myResolve(res),
+                                onError:err=>myReject(err)
+                            });
+                        })
+                    })}} icon={<DeleteOutlined />}/>
                 </Space>
             ),
         },
@@ -78,7 +88,7 @@ const Clients = () => {
         hasNextPage,
         isFetching,
         isFetchingNextPage,
-        status }= useInfiniteQuery(['clients', search], getClients1, {
+        status }= useInfiniteQuery(['clients', search], getClients, {
         getNextPageParam: ({ page, last_page }) => {
             if (page < last_page) {
                 return page + 1;
@@ -92,6 +102,17 @@ const Clients = () => {
     const handleFetch = () => {
         if(hasNextPage)fetchNextPage();
     };
+
+
+    const deleteMutation = useMutation(deleteClient, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('clients');
+            showMessage('Klijent je uspjesno obrisan!', MESSAGE_TYPE.SUCCESS);
+        },
+        onError: (error) => {
+            showMessage(error?.response?.data?.message, MESSAGE_TYPE.ERROR);
+        }
+    })
 
     const {formState: { errors }, handleSubmit, control,reset} = useForm({
         mode: 'onSubmit',
@@ -109,7 +130,7 @@ const Clients = () => {
         return {
             onClick: () => {
                 console.log(record); //record.id
-                setOpenModal({open:true,title:'Informacije o klientu',mode:FORM_MODE.SHOW,id:record.id,data:record});
+                setOpenModal({open:true,title:'Informacije o klientu',mode:FORM_MODE.SHOW,id:record?.user?.id});
             }
         };
     }
