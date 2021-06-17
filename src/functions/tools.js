@@ -162,3 +162,49 @@ export const concatData1 = (data) => {
 export const dataToOptions = (data) => {
     return data.map(e=>Object({value:e.id,label:e.name}));
 }
+
+export const getEquipmentData = (data) => {
+    let newData ={...data};
+    newData.equipment = [];
+    for(let i in data){
+        if(i?.startsWith('_')){
+            newData.equipment.push({
+                equipment_id:i.substring(1),
+                quantity: data[i] || 0
+            })
+            delete newData[i];
+        }
+    }
+    return newData;
+}
+
+export const getEquipmentObj= (data) => {
+    let newData = {};
+    for(let i in data){
+        if(i?.startsWith('_')){
+            newData[i] = data[i];
+        }
+    }
+    return newData;
+}
+
+export const setEquipmentData = (data) => {
+    let newData ={...data};
+    data?.equipment?.forEach(e=>{
+        newData['_'+e.id] = e?.pivot?.quantity;
+    })
+    delete newData.equipment;
+
+    return newData;
+}
+
+export const calcDays = (from_date,to_date,price_per_day) => {
+        if(from_date && to_date){
+            let days =  to_date.diff(from_date, 'days')   // =1
+
+            if(days>0)return days*price_per_day;
+            else return 0;
+        }else{
+            return 0;
+        }
+}

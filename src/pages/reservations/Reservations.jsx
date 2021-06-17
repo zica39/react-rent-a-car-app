@@ -1,4 +1,5 @@
-import {Table, Space, Button, DatePicker, message} from 'antd';
+import { Space, Button, DatePicker, message, Spin} from 'antd';
+import { InfinityTable  as Table } from 'antd-table-infinity';
 import { EditOutlined,PlusSquareOutlined,DeleteOutlined,SearchOutlined } from '@ant-design/icons';
 import {useState} from "react";
 import {useHistory} from 'react-router-dom';
@@ -6,10 +7,11 @@ import EditModal from "./components/editModal/EditModal";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import {FORM_MODE} from "../../constants/config";
-import {insertKey, showConfirm} from "../../functions/tools";
-import {useMutation, useQuery, useQueryClient} from "react-query";
+import {FORM_MODE, MESSAGE_TYPE} from "../../constants/config";
+import {concatData1, insertKey, showConfirm, showMessage} from "../../functions/tools";
+import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from "react-query";
 import {deleteReservation, getReservations} from "../../services/reservations";
+import {getVehicles} from "../../services/cars";
 
 const schema = yup.object().shape({
     to_date: yup.date().required(),
@@ -23,7 +25,7 @@ const schema = yup.object().shape({
 
 const Reservations = () => {
 
-    const {formState: { errors }, handleSubmit, control,reset} = useForm({
+    const {formState: { errors }, handleSubmit, control,reset,setValue,getValues} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onChange',
         resolver: yupResolver(schema),
@@ -98,10 +100,29 @@ const Reservations = () => {
             ),
         },
     ];
-    const queryClient = useQueryClient();
-    const { isLoading, isError, data, error } = useQuery(['reservations',{search:search}], ()=>getReservations(search));
 
-    if(isError)message.error(error);
+    const queryClient = useQueryClient();
+    const {
+        data,
+        error,
+        isError,
+        fetchNextPage,
+        hasNextPage,
+        isFetching,
+        isFetchingNextPage,
+    }= useInfiniteQuery(['reservations', search], getReservations, {
+        getNextPageParam: ({ page, last_page }) => {
+            if (page < last_page) {
+                return page + 1;
+            }
+            return false
+        },
+    });
+    if(isError) showMessage(error, MESSAGE_TYPE.ERROR);
+
+    const handleFetch = () => {
+        if(hasNextPage)fetchNextPage();
+    };
 
     const deleteMutation = useMutation(deleteReservation, {
         onSuccess: () => {
@@ -132,20 +153,24 @@ const Reservations = () => {
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 title={openModal.title}
-                form={{errors:errors,handleSubmit:handleSubmit,control:control,reset:reset}}
+                form={{errors:errors,handleSubmit:handleSubmit,control:control,reset:reset,setValue,getValues}}
                 queryClient={queryClient}
             />
         </Space>
         <Table
-               onRow={onRowClick}
-               loading={isLoading}
-               columns={columns}
-               dataSource={data?insertKey(data.data.data):[]}
-               bordered={true}
-               pagination={false}
-               scroll={{ y: window.innerHeight-250 }}
-               className='hover-row'
-        />
+            rowKey="id"
+            loading={isFetchingNextPage}
+            columns={columns}
+            dataSource={concatData1(data)}
+            onFetch={handleFetch}
+            /*pageSize={10}
+            total={data?.pages[0]?.data?.total}*/
+            onRow={onRowClick}
+            className='hover-row'
+            bordered={true}
+            pagination={false}
+            scroll={{ y: window.innerHeight-250 }} />
+        {(isFetching && !isFetchingNextPage)&&<Spin tip="Loading..." />}
     </>)
 
 }

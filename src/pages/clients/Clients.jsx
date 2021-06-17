@@ -1,4 +1,4 @@
-import {Space, Button, Input, message} from 'antd';
+import {Space, Button, Input, message, Spin} from 'antd';
 import { InfinityTable  as Table } from 'antd-table-infinity';
 import {DeleteOutlined, EditOutlined, UserAddOutlined} from '@ant-design/icons';
 import {useEffect, useState} from "react";
@@ -88,7 +88,7 @@ const Clients = () => {
         hasNextPage,
         isFetching,
         isFetchingNextPage,
-        status }= useInfiniteQuery(['clients', search], getClients, {
+        }= useInfiniteQuery(['clients', search], getClients, {
         getNextPageParam: ({ page, last_page }) => {
             if (page < last_page) {
                 return page + 1;
@@ -96,7 +96,7 @@ const Clients = () => {
             return false
         },
     });
-    if(isError)message.error(error);
+    if(isError) showMessage(error, MESSAGE_TYPE.ERROR);
    // console.log((data))
 
     const handleFetch = () => {
@@ -164,6 +164,7 @@ const Clients = () => {
             bordered={true}
             pagination={false}
             scroll={{ y: window.innerHeight-250 }} />
+        {(isFetching && !isFetchingNextPage)&&<Spin tip="Loading..." />}
     </>)
 
 }

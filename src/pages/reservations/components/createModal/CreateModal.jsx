@@ -1,11 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import {Modal, Button, message} from 'antd';
+import {Modal, Button} from 'antd';
 import {SaveOutlined} from "@ant-design/icons";
 import CreateForm from "../createForm/CreateForm";
 import moment from "moment";
 import {createReservation} from "../../../../services/reservations";
+import {calcDays, getEquipmentData, showMessage} from "../../../../functions/tools";
+import {MESSAGE_TYPE} from "../../../../constants/config";
 
-const CreateModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubmit,reset,setValue},queryClient}) => {
+const CreateModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubmit,reset,setValue,getValues},queryClient,params}) => {
     const [isLoading,setIsLoading] = useState(false);
 
     const handleCancel = () => {
@@ -15,13 +17,19 @@ const CreateModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
 
     useEffect(()=>{
         if(openModal.open && openModal.id){
-            reset({...{},total_price:0,vehicle_id:openModal.id,vehicle:openModal.data?.plate_no});
+            reset({
+                total_price:calcDays(moment(params.start_date),moment(params.end_date),openModal?.data?.price_per_day),
+                vehicle_id:openModal.id,
+                vehicle:openModal.data?.plate_no,
+                from_date:moment(params.start_date),
+                to_date:moment(params.end_date)
+            });
         }
     },[openModal]);
 
     const onFinish = (data) => {
-        console.log(data)
-        let formData = data;
+        let formData = getEquipmentData(data) ;
+        console.log(formData)
         //delete formData.client;
         delete formData.vehicle;
         delete formData.total_price;
@@ -32,11 +40,11 @@ const CreateModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
         setIsLoading(true);
         createReservation(formData).then(res=>{
             queryClient.invalidateQueries('cars-available');
-            message.success(res?.statusText);
+            showMessage('Rezervacija je uspjesno kreirana!', MESSAGE_TYPE.SUCCESS);
             setIsLoading(false);
             setOpenModal({});
         }).catch(err=>{
-            message.error(err?.response?.statusText);
+            showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
             setIsLoading(false);
         });
     }
@@ -54,7 +62,15 @@ const CreateModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
     return (
         <>
             <Modal title={title} visible={openModal.open} onCancel={handleCancel} footer={footer}>
-                    <CreateForm control={control} errors={errors} setValue={setValue} handleSubmit={handleSubmit} onFinish={onFinish} />
+                    <CreateForm
+                        control={control}
+                        errors={errors}
+                        setValue={setValue}
+                        getValues={getValues}
+                        handleSubmit={handleSubmit}
+                        onFinish={onFinish}
+                        price_per_day={openModal?.data?.price_per_day}
+                    />
             </Modal>
         </>
     );

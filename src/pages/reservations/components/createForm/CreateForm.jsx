@@ -1,26 +1,32 @@
 import React, {useEffect, useState} from "react";
-import {Form} from "antd";
+import {Col, Form, Input, Row} from "antd";
 import FormInput from "../../../../components/formInput/FormInput";
 import {INPUT_TYPE} from "../../../../constants/config";
-import {getLocations} from "../../../../services/reservations";
+import {getEquipment, getLocations} from "../../../../services/reservations";
 import {getClientsOptions} from "../../../../services/clients";
+import {getInitValues} from "../../../../functions/tools";
 
-const CreateForm = ({onFinish,handleSubmit,errors,control,setValue}) => {
+const CreateForm = ({onFinish,handleSubmit,errors,control,setValue,getValues,price_per_day}) => {
 
     const [locationOptions,setLocationOptions] = useState([]);
+    const [equipment,setEquipment] = useState([]);
     useEffect(()=>{
         getLocations().then(res=>{
             let data = res?.data;
             setLocationOptions(data.map(e=>Object({value:e.id,label:e.name})));
         });
+        getEquipment().then(res=>{
+            let data = res?.data?.data;
+            setEquipment(data.map(e=>Object({id:e.id,name:e.name,max_quantity:e.max_quantity})));
+        });
     },[]);
 
     return  <Form
         id="create-reservation-form"
-        labelCol={{ span: 7 }}
+        labelCol={{ span: 12 }}
         wrapperCol={{ span: 17 }}
         layout="horizontal"
-        initialValues={{ }}
+        /*initialValues={{}}*/
         onFinish={handleSubmit(onFinish)}
         onValuesChange={()=>{}}
         size="default"
@@ -56,7 +62,20 @@ const CreateForm = ({onFinish,handleSubmit,errors,control,setValue}) => {
             input_params:{
                 style:{width:'100%'},
                 placeholder:"Izaberite datum od",
-                allowClear:true
+                allowClear:true,
+                onChange:(e) => {
+                    let to_date = getValues('to_date');
+                    let from_date = e;
+                    if(from_date && to_date){
+                        let days =  to_date.diff(from_date, 'days')   // =1
+
+                        if(days>0)setValue('total_price',days*price_per_day)
+                        else setValue('total_price',0);
+                    }else{
+                        setValue('total_price',0);
+                    }
+                    setValue('from_date',e,{shouldValidate:true,shouldDirty:true,shouldTouch:true})
+                }
             }
         }} errors={errors} control={control}/>
 
@@ -68,7 +87,20 @@ const CreateForm = ({onFinish,handleSubmit,errors,control,setValue}) => {
             input_params:{
                 style:{width:'100%'},
                 placeholder:"Izaberite datum do",
-                allowClear:true
+                allowClear:true,
+                onChange:(e) => {
+                    let from_date = getValues('from_date');
+                    let to_date = e;
+                    if(from_date && to_date){
+                       let days =  to_date.diff(from_date, 'days')   // =1
+
+                        if(days>0)setValue('total_price',days*price_per_day)
+                        else setValue('total_price',0);
+                    }else{
+                        setValue('total_price',0);
+                    }
+                    setValue('to_date',e,{shouldValidate:true,shouldDirty:true,shouldTouch:true})
+                }
             }
         }} errors={errors} control={control}/>
 
@@ -93,6 +125,27 @@ const CreateForm = ({onFinish,handleSubmit,errors,control,setValue}) => {
             },
             options:locationOptions
         }} errors={errors} control={control}/>
+    <p>Dodatna oprema:</p>
+        <Input.Group>
+    <Row gutter={12}>
+        {equipment.map((e,i)=>{
+
+            return  <Col span={11}><FormInput key={i} data={{
+                type: INPUT_TYPE.NUMBER,
+                name: '_'+e.id,
+                label:e.name,
+                input_params:{
+                    max:e.max_quantity,
+                    step:1,
+                    min:0,
+                    placeholder:'0'
+                   /* style:{width:'100%',color:'black'}*/
+                }
+            }} errors={errors} control={control}/></Col>
+        })}
+    </Row>
+        </Input.Group>
+        <p>Ukupna cijena:</p>
         <FormInput data={{
             type: INPUT_TYPE.NUMBER,
             name:'total_price',

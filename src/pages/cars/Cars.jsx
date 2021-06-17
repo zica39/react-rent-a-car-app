@@ -1,4 +1,5 @@
-import { Table, Space, Button,Input,message } from 'antd';
+import {Space, Button, Input, Spin} from 'antd';
+import { InfinityTable  as Table } from 'antd-table-infinity';
 import { EditOutlined,PlusSquareOutlined,DeleteOutlined } from '@ant-design/icons';
 import {useEffect, useState} from "react";
 import ShowCarModal from "./components/showCarModal/ShowCarModal";
@@ -6,10 +7,11 @@ import StepFormModal from "./components/stepFormModal/StepFormModal";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import {FORM_MODE,CAR_MIN_YEAR} from "../../constants/config";
-import {insertKey, pullData, showConfirm} from "../../functions/tools";
-import {useMutation, useQuery, useQueryClient} from "react-query";
+import {FORM_MODE, CAR_MIN_YEAR, MESSAGE_TYPE} from "../../constants/config";
+import {concatData1, insertKey, pullData, showConfirm, showMessage} from "../../functions/tools";
+import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from "react-query";
 import {deleteVehicle, getVehicles} from "../../services/cars";
+import {getClients} from "../../services/clients";
 
 const car_plate = new RegExp(/^[A-Z]{1,3} [A-Z]{1,2}[0-9]{3,4}$/g)
 const schema = yup.object().shape({
@@ -18,7 +20,7 @@ const schema = yup.object().shape({
     car_type_id:yup.number().integer().required(),
     no_of_seats: yup.number().integer().min(0).max(10),
     price_per_day:yup.number().min(0),
-    remarks:yup.string().max(500)
+    remarks:yup.string().nullable().max(500)
 });
 
 const NEW_CAR = {open:true,title:'Kreiraj novo vozilo',mode:FORM_MODE.CREATE,id:0};
@@ -103,17 +105,36 @@ const Cars = () => {
     ];
 
     const queryClient = useQueryClient();
-    const { isLoading, isError, data, error } = useQuery(['cars',{search:search}], ()=>getVehicles(search));
+    const {
+        data,
+        error,
+        isError,
+        fetchNextPage,
+        hasNextPage,
+        isFetching,
+        isFetchingNextPage,
+    }= useInfiniteQuery(['cars', search], getVehicles, {
+        getNextPageParam: ({ page, last_page }) => {
+            if (page < last_page) {
+                return page + 1;
+            }
+            return false
+        },
+    });
+    if(isError) showMessage(error, MESSAGE_TYPE.ERROR);
+    // console.log((data))
 
-    if(isError)message.error(error);
+    const handleFetch = () => {
+        if(hasNextPage)fetchNextPage();
+    };
 
     const deleteMutation = useMutation(deleteVehicle, {
         onSuccess: () => {
             queryClient.invalidateQueries('cars');
-            message.success('Vozilo uspjesno obrisnao');
+            showMessage('Vozilo uspjesno obrisnao!', MESSAGE_TYPE.SUCCESS);
         },
-        onError: (error) => {
-            message.error(error?.response?.statusText);
+        onError: (err) => {
+            showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
         }
     })
 
@@ -141,15 +162,19 @@ const Cars = () => {
             />
         </Space>
         <Table
-               onRow={onRowClick}
-               loading={isLoading}
-               columns={columns}
-               dataSource={data?insertKey(data.data.data):[]}
-               bordered={true}
-               pagination={false}
-               scroll={{ y: window.innerHeight-250 }}
-               className='hover-row'
-        />
+            rowKey="id"
+            loading={isFetchingNextPage}
+            columns={columns}
+            dataSource={concatData1(data)}
+            onFetch={handleFetch}
+            /*pageSize={10}
+            total={data?.pages[0]?.data?.total}*/
+            onRow={onRowClick}
+            className='hover-row'
+            bordered={true}
+            pagination={false}
+            scroll={{ y: window.innerHeight-250 }} />
+        {(isFetching && !isFetchingNextPage)&&<Spin tip="Loading..." />}
     </>)
 
 }

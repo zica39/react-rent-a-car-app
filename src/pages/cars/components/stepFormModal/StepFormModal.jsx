@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import { Modal, Button,Steps,message } from 'antd';
-import {SaveOutlined,ArrowRightOutlined,ArrowLeftOutlined} from "@ant-design/icons";
+import { Modal, Button,Steps } from 'antd';
+import {SaveOutlined,ArrowRightOutlined,ArrowLeftOutlined,CheckCircleTwoTone} from "@ant-design/icons";
 import CarForm from "../carForm/CarForm";
-import {FILE_URL, FORM_MODE} from "../../../../constants/config";
+import {FILE_URL, FORM_MODE, MESSAGE_TYPE} from "../../../../constants/config";
 import './style.css';
 import ImageUpload from "../imageUpload/ImageUpload";
 import {createVehicle, getVehicle, updateVehicle} from "../../../../services/cars";
+import {showMessage} from "../../../../functions/tools";
 
 const { Step } = Steps;
 const steps = [
@@ -64,7 +65,7 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
                        setFileList(data.photos.map(e=>{return {'uid': e.id,'status': 'done','url': FILE_URL+e.photo }}))
                     }).catch(err=>{
                         //console.log(err?.response?.statusText);
-                         message.error(err?.response?.statusText);
+                        showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
                     })
                 }
             }
@@ -73,39 +74,47 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
     const onSave = () => {
             console.log(formData)
             setIsLoading(true);
-        if(!openModal.id){
-           let photos = fileList.map(e=>e.originFileObj);
+            let photos = fileList.filter(e=>e.originFileObj).map(e=>e.originFileObj);
+            console.log(photos);
             const form = new FormData();
 
             for (let name in formData) {
                 form.append(name, formData[name]);
             }
-            for(let photo in photos)form.append('photo[]',photo);
+            photos.forEach((e,i)=>form.append(`photo[${i}]`,e));
+            //if(photos.length === 0)
 
-            console.log(form)
+        if(!openModal.id){
             createVehicle(form).then(res=>{
                 queryClient.invalidateQueries('cars');
-                message.success(res.statusText);
+                showMessage('Vozilo je uspjesno kreirano!', MESSAGE_TYPE.SUCCESS);
                 setOpenModal({});
+                setFileList([]);
+                setIsLoading(false);
             }).catch(err=>{
-                message.error(err?.response?.statusText);
+                showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
                 setIsLoading(false);
             })
         }else {
-            updateVehicle(openModal.id, formData).then(res=>{
+            updateVehicle(openModal.id, form).then(res=>{
                 queryClient.invalidateQueries('cars');
-                message.success(res.statusText);
+                showMessage('Vozilo je uspjesno izmjenjeno!', MESSAGE_TYPE.SUCCESS);
                 setOpenModal({});
+                setIsLoading(false);
+                setFileList([]);
             }).catch(err=>{
-                message.error(err?.response?.statusText);
+                showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
                 setIsLoading(false);
             })
         }
     };
 
     const handleCancel = () => {
-        if(isLoading === false)
+        if(isLoading === false){
             setOpenModal({...openModal,open:false});
+            setFileList([]);
+        }
+
     };
 
     const onFinishStep1 = (data) => {
@@ -115,8 +124,11 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
         next();
     }
     const onFinishStep2 = (data) => {
-        setFormData({...formData,photos:[]});
-        next();
+        if(fileList.length > 0 && fileList.length <= 5){
+            next();
+        }else{
+            showMessage('Morate postaviti makra jednu fotografju, maksimalno pet', MESSAGE_TYPE.ERROR);
+        }
     }
 
     const footer =  [
@@ -142,7 +154,9 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
                         current === 0?
                             <CarForm disabled={openModal.mode===FORM_MODE.SHOW} control={control} errors={errors} handleSubmit={handleSubmit} onFinish={onFinishStep1} />:
                         current === 1?
-                            <ImageUpload fileList={fileList} setFileList={setFileList} />:''
+                            <ImageUpload fileList={fileList} setFileList={setFileList} />:
+                            current ===2?
+                                <p><CheckCircleTwoTone style={{margin:'auto', fontSize: '72px'}} /></p>:''
                     }
                 </div>
                 <div className="steps-action">

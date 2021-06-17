@@ -1,17 +1,40 @@
 import axiosInstance from "./axios";
 import {getToken} from "../functions/tools";
 
-export const getVehicles = (search) => {
-    let params = {}
-    if(search)params.search = search;
-
-    return axiosInstance.get('/vehicles',{
-        params:params,
+export async function getVehicles (queryKey) {
+    //console.log(queryKey)
+    const page = queryKey?.pageParam || 1;
+    const search = queryKey?.queryKey[1];
+    const res = await axiosInstance.get('/vehicles',{
+        params: {search:search,page:page},
         headers:{'Authorization': getToken()}
     });
+
+    return {
+        items: res?.data?.data,
+        page: res?.data?.current_page,
+        last_page:res?.data?.last_page
+    }
 }
 
-export const getAvailableVehicles = (start_date,end_date,car_type) => {
+export async function getAvailableVehicles (queryKey) {
+    //console.log(queryKey)
+    const page = queryKey?.pageParam || 1;
+    const search = queryKey?.queryKey[1];
+    const res = await axiosInstance.get('/cars-available',{
+        params: {...search,page:page},
+        headers:{'Authorization': getToken()}
+    });
+
+    return {
+        items: res?.data?.data,
+        page: res?.data?.current_page,
+        last_page:res?.data?.last_page
+    }
+}
+
+export const getAvailableVehicles1 = (start_date,end_date,car_type) => {
+   // console.log(start_date,end_date,car_type)
     let params = {}
     params.car_type = car_type;
     params.start_date = start_date?start_date:'1900-01-01';
@@ -27,7 +50,6 @@ export const createVehicle = (data) => {
     return axiosInstance.post('/vehicle',data,{
         headers:{
             'Authorization': getToken(),
-            'Content-Type': "multipart/form-data; charset=utf-8; boundary=" + Math.random().toString().substr(2)
         },
     });
 }
