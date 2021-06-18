@@ -18,19 +18,28 @@ export const destroyData = (name) => {
 }
 
 export const auth = () => {
-    return JSON.parse(localStorage.getItem('auth'));
+    return JSON.parse(sessionStorage.getItem('auth')) || JSON.parse(localStorage.getItem('auth'));
 }
 
-export const saveAuth = (user) => {
-    localStorage.setItem('auth',JSON.stringify({
-        'name':user.name,
-        'token': user.token,
-        'role': user.role
-    }));
+export const saveAuth = (user, rememberMe) => {
+    if(rememberMe) {
+        localStorage.setItem('auth', JSON.stringify({
+            'name': user.name,
+            'token': user.token,
+            'role': user.role
+        }));
+    }else{
+        sessionStorage.setItem('auth', JSON.stringify({
+            'name': user.name,
+            'token': user.token,
+            'role': user.role
+        }))
+    }
 }
 
 export const removeAuth = () => {
     localStorage.removeItem('auth');
+    sessionStorage.removeItem('auth');
 }
 
 export const getToken = () =>{

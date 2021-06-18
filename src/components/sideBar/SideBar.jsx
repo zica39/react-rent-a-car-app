@@ -3,6 +3,7 @@ import {Layout, Menu} from "antd";
 import {useHistory,useLocation} from 'react-router-dom';
 import {CalendarOutlined, CarOutlined, UserOutlined} from "@ant-design/icons";
 import {PAGE_INDEX} from "../../constants/config";
+import {_} from "../../functions/tools";
 
 const {  Sider } = Layout;
 
@@ -29,9 +30,9 @@ const SideBar = () => {
             style={{ height: '100%', borderRight: 0 }}
             theme="dark"
         >
-            <Menu.Item key="1" onClick={()=>switchToPage('/clients')} icon={<UserOutlined />} >Klijenti</Menu.Item>
-            <Menu.Item key="2" onClick={()=>switchToPage('/cars')} icon={<CarOutlined />}>Vozila</Menu.Item>
-            <Menu.Item key="3" onClick={()=>switchToPage('/reservations')} icon={<CalendarOutlined />}>Rezervacije</Menu.Item>
+            <Menu.Item key="1" onClick={()=>switchToPage('/clients')} icon={<UserOutlined />} >{_('clients')}</Menu.Item>
+            <Menu.Item key="2" onClick={()=>switchToPage('/cars')} icon={<CarOutlined />}>{_('cars')}</Menu.Item>
+            <Menu.Item key="3" onClick={()=>switchToPage('/reservations')} icon={<CalendarOutlined />}>{_('reservations')}</Menu.Item>
         </Menu>
     </Sider>
 }

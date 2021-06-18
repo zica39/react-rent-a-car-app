@@ -1,72 +1,63 @@
-import {Space, Button, Input, message, Spin} from 'antd';
+import {Space, Button, Input, Spin} from 'antd';
 import { InfinityTable  as Table } from 'antd-table-infinity';
 import {DeleteOutlined, EditOutlined, UserAddOutlined} from '@ant-design/icons';
 import {useEffect, useState} from "react";
 import {FORM_MODE, MESSAGE_TYPE} from "../../constants/config";
-import * as yup from "yup";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import ClientModal from "./components/clientModal/ClientModal";
-import {concatData, concatData1, insertKey, pullData, showConfirm, showMessage} from "../../functions/tools";
-import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from "react-query";
+import {concatData1, pullData, showConfirm, showMessage, _} from "../../functions/tools";
+import {useInfiniteQuery, useMutation, useQueryClient} from "react-query";
 import {getClients,deleteClient} from "../../services/clients";
-
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
-const passportRegExp = new RegExp("^[A-Z0-9.,/ $@()]+$");
-const schema = yup.object().shape({
-    email: yup.string().email().required(),
-    name:yup.string().min(3).max(255),
-    country_id:yup.number().integer().required(),
-    identification_document_no:yup.string().min(9).max(9).matches(passportRegExp, 'Passport is not yet valid.'),
-    phone_no:yup.string().matches(phoneRegExp, 'Phone number is not valid'),
-    remarks:yup.string().max(500)
-});
-const NEW_CLIENT = {open:true,title:'Kreiraj novog klijenta',mode:FORM_MODE.CREATE,id:0};
+import {clientScheme} from "../../constants/schemes";
 
 const Clients = () => {
 
+    const NEW_CLIENT = {open:true,title:_('create_new_client'),mode:FORM_MODE.CREATE,id:0};
     const[openModal,setOpenModal] = useState({});
     const[search,setSearch] = useState('');
     const columns = [
         {
-            title: 'Ime',
+            title: _('client_name'),
             dataIndex: 'name',
         },
         {
-            title: 'Broj lične karte/pasoša',
+            title:  _('identification_document_no'),
             dataIndex: 'identification_document_no',
         },
         {
-            title: 'Telefon',
+            title:  _('phone_no'),
             dataIndex: 'phone_no',
         },
         {
-            title: 'Email',
+            title:  _('client_email'),
             dataIndex: 'email',
         },
         {
-            title: 'Datum prve rezervacije',
+            title: _('date_of_first_reservation'),
             dataIndex: 'date_of_first_reservation',
+            render:(text) =>text || '-'
         },
         {
-            title: 'Datum zadnje rezervacije',
+            title: _('date_of_last_reservation'),
             dataIndex: 'date_of_last_reservation',
+            render:(text) =>text || '-'
         },
         /*{
-            title: 'Napomena',
+            title: _('remarks'),
             dataIndex: 'remarks',
         },*/
         {
-            title: 'Action',
+            title:  _('action'),
             key: 'action',
             render: (text, record) => (
                 // record.id
                 <Space size="middle">
                     <Button onClick={(e)=>{
                         e.stopPropagation();
-                        setOpenModal({open:true,title:'Izmjeni vozilo',mode:FORM_MODE.EDIT,id:record?.user?.id});
+                        setOpenModal({open:true,title:_('edit_client'),mode:FORM_MODE.EDIT,id:record?.user?.id});
                     }} icon={<EditOutlined />}/>
-                    <Button onClick={(e)=>{e.stopPropagation();showConfirm('Obrisi klienta',<DeleteOutlined />,'Da li ste sigurni?',()=>{
+                    <Button onClick={(e)=>{e.stopPropagation();showConfirm(_('delete_client'),<DeleteOutlined />,_('question'),()=>{
                         return new Promise(function(myResolve, myReject) {
                             deleteMutation.mutate(record?.user?.id,{
                                 onSuccess:res=>myResolve(res),
@@ -100,14 +91,14 @@ const Clients = () => {
    // console.log((data))
 
     const handleFetch = () => {
-        if(hasNextPage)fetchNextPage();
+        if(hasNextPage)fetchNextPage().then();
     };
 
 
     const deleteMutation = useMutation(deleteClient, {
         onSuccess: () => {
-            queryClient.invalidateQueries('clients');
-            showMessage('Klijent je uspjesno obrisan!', MESSAGE_TYPE.SUCCESS);
+            queryClient.invalidateQueries('clients').then();
+            showMessage(_('client_delete_success'), MESSAGE_TYPE.SUCCESS);
         },
         onError: (error) => {
             showMessage(error?.response?.data?.message, MESSAGE_TYPE.ERROR);
@@ -117,7 +108,7 @@ const Clients = () => {
     const {formState: { errors }, handleSubmit, control,reset} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onChange',
-        resolver: yupResolver(schema),
+        resolver: yupResolver(clientScheme()),
         defaultValues:{
             email: '',
             name:'',
@@ -130,7 +121,7 @@ const Clients = () => {
         return {
             onClick: () => {
                 console.log(record); //record.id
-                setOpenModal({open:true,title:'Informacije o klientu',mode:FORM_MODE.SHOW,id:record?.user?.id});
+                setOpenModal({open:true,title:_('client_info'),mode:FORM_MODE.SHOW,id:record?.user?.id});
             }
         };
     }
@@ -140,9 +131,9 @@ const Clients = () => {
     },[]);
 
     return ( <>
-        <Space style={{ marginTop: 10,display:'flex',justifyContent:'space-between' }}>
-            <Button icon={<UserAddOutlined />} onClick={()=>setOpenModal(NEW_CLIENT)}>Dodaj klijenta</Button>
-            <Input.Search placeholder="Pretrazi klienta" allowClear onSearch={(e)=>{ setSearch(e); }} style={{ width: 200 }} />
+        <Space style={{ marginTop: 10, marginBottom:5,display:'flex',justifyContent:'space-between' }}>
+            <Button icon={<UserAddOutlined />} onClick={()=>setOpenModal(NEW_CLIENT)}>{_('add_client_btn')}</Button>
+            <Input.Search placeholder={_('search_clients')} allowClear onSearch={(e)=>{ setSearch(e); }} style={{ width: 200 }} />
             <ClientModal
                 openModal={openModal}
                 setOpenModal={setOpenModal}
@@ -157,13 +148,11 @@ const Clients = () => {
             columns={columns}
             dataSource={concatData1(data)}
             onFetch={handleFetch}
-            /*pageSize={10}
-            total={data?.pages[0]?.data?.total}*/
             onRow={onRowClick}
             className='hover-row'
             bordered={true}
             pagination={false}
-            scroll={{ y: window.innerHeight-250 }} />
+            scroll={{ y: window.innerHeight-300 }} />
         {(isFetching && !isFetchingNextPage)&&<Spin tip="Loading..." />}
     </>)
 

@@ -1,6 +1,7 @@
 import {Button, Checkbox, Form, Input} from "antd";
 import {Controller} from "react-hook-form";
 import {LockOutlined, MailOutlined} from "@ant-design/icons";
+import {_} from "../../../../functions/tools";
 import React from "react";
 
 const LoginForm = ({onFinish,handleSubmit,errors,control,loading}) => {
@@ -17,7 +18,7 @@ const LoginForm = ({onFinish,handleSubmit,errors,control,loading}) => {
         <Form.Item
             validateStatus={errors && errors['email'] ? 'error' : ''}
             help={errors?.email?.message}
-            label="Email"
+            label={_('email')}
             htmlFor="email"
             required
         >
@@ -26,14 +27,14 @@ const LoginForm = ({onFinish,handleSubmit,errors,control,loading}) => {
                 autoComplete="email"
                 control={control}
                 render={({ field }) => (
-                    <Input  {...field} prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Email" id="email" />
+                    <Input  {...field} prefix={<MailOutlined className="site-form-item-icon" />} placeholder={_('email')} id="email" />
                 )}
             />
         </Form.Item>
         <Form.Item
             validateStatus={errors && errors['password'] ? 'error' : ''}
             help={errors?.password?.message}
-            label="Password"
+            label={_('password')}
             htmlFor="password"
             required
             tooltip=""
@@ -49,7 +50,7 @@ const LoginForm = ({onFinish,handleSubmit,errors,control,loading}) => {
                         id="password"
                         prefix={<LockOutlined className="site-form-item-icon" />}
                         type="password"
-                        placeholder="Password"
+                        placeholder={_('password')}
                     />
                 )}
             />
@@ -62,21 +63,16 @@ const LoginForm = ({onFinish,handleSubmit,errors,control,loading}) => {
                     control={control}
                     defaultValue=""
                     render={({ field }) => (
-                        <Checkbox  {...field} >Remember me</Checkbox>
+                        <Checkbox  {...field} >{_('remember_me')}</Checkbox>
                     )}
                 />
             </Form.Item>
-
-            {/*<a className="login-form-forgot" href="">
-                    Forgot password
-                </a>*/}
         </Form.Item>
 
         <Form.Item>
             <Button loading={loading} type="primary" htmlType="submit" className="login-form-button">
-                Log in
+                {_('login')}
             </Button>
-            {/*Or <a href="">register now!</a>*/}
         </Form.Item>
     </Form>
 }

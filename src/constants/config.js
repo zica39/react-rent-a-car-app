@@ -30,6 +30,7 @@ export const INPUT_TYPE = {
 }
 
 export const RESERVATION_STATUS = {
+    ALL:0,
     PREVIOUS:1,
     PRESENT:2,
     FUTURE:3

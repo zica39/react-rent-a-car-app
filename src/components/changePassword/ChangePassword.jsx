@@ -1,27 +1,14 @@
 import {useEffect, useState} from "react";
-import {Modal, Button,Form, message} from 'antd';
+import {Modal, Button,Form} from 'antd';
 import {KeyOutlined, SaveOutlined} from "@ant-design/icons";
-import * as yup from "yup";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {INPUT_TYPE, MESSAGE_TYPE} from "../../constants/config";
 import FormInput from "../formInput/FormInput";
 import {changePassword} from "../../services/auth";
-import {showMessage} from "../../functions/tools";
+import {showMessage,_} from "../../functions/tools";
+import {changePasswordSchema} from "../../constants/schemes";
 
-const password_roules = yup.string()
-    .required('required')
-    .min(4, 'Password is too short - should be 4 chars minimum.')
-    .max(12,'Password is too long - should be 12 chars maximum.')
-    .matches(/^[a-zA-Z0-9!#%&]*$/g, 'Password can only contain Latin letters, numbers and chars(!,#,%,&)')
-
-const schema = yup.object().shape({
-    old_password: password_roules,
-    new_password:password_roules,
-    confirm_password: yup.string()
-        .oneOf([yup.ref('new_password'), null], 'Passwords must match')
-
-});
 
 const ChangePassword = () => {
     const[openModal,setOpenModal] = useState(false);
@@ -29,12 +16,8 @@ const ChangePassword = () => {
     const {formState: { errors }, handleSubmit, control,reset} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onChange',
-        resolver: yupResolver(schema),
-        defaultValues:{
-            email:'',
-            password:'',
-            remember: false
-        }
+        resolver: yupResolver(changePasswordSchema()),
+        defaultValues:{old_password:'', new_password:'', confirm_password: '' }
     });
     const handleCancel = () => {
         if(isLoading === false)
@@ -48,7 +31,7 @@ const ChangePassword = () => {
         setIsLoading(true);
         changePassword(data).then(res=>{
             setIsLoading(false);
-            showMessage('Lozinka uspjesno izmjenjena');
+            showMessage(_('change_password_success'));
             setOpenModal(false);
         }).catch(err=>{
             //console.log(err?.response);
@@ -59,17 +42,17 @@ const ChangePassword = () => {
 
     const footer =  [
         <Button disabled={isLoading} className="login-form-button" key='cancel' onClick={handleCancel}>
-            Odustani
+            {_('cancel')}
         </Button>,
 
         <Button loading={isLoading} type="primary" key="ok" form="change-password-form" icon={<SaveOutlined />} htmlType="submit" className="login-form-button">
-            Izmjeni
+            {_('change')}
         </Button>
     ];
 
 return <>
-    <Button onClick={()=>setOpenModal(true)} icon={<KeyOutlined />}>Izmjeni lozinku</Button>
-    <Modal title='Izmjeni lozinku' visible={openModal} onCancel={handleCancel} footer={footer}>
+    <Button onClick={()=>setOpenModal(true)} icon={<KeyOutlined />}>{_('change_password')}</Button>
+    <Modal title={_('change_password')} visible={openModal} onCancel={handleCancel} footer={footer}>
         <Form
             id="change-password-form"
             labelCol={{ span: 7 }}
@@ -80,30 +63,30 @@ return <>
             <FormInput data={{
                 type:INPUT_TYPE.PASSWORD,
                 name:'old_password',
-                label:'Stara lozinka',
+                label:_('old_password'),
                 required:true,
                 input_params:{
-                    placeholder:"Unesite staru lozinku"
+                    placeholder:_('insert_old_password'),
                 }
             }} errors={errors} control={control}/>
             <FormInput data={{
                 type:INPUT_TYPE.TEXT,
                 name:'new_password',
-                label:'Nova lozinka',
+                label:_('new_password'),
                 required:true,
                 input_params:{
                     type:'password',
-                    placeholder:"Unesite nova lozinku"
+                    placeholder:_('insert_new_password')
                 }
             }} errors={errors} control={control}/>
             <FormInput data={{
                 type:INPUT_TYPE.TEXT,
                 name:'confirm_password',
-                label:'Potvdite lozinku',
+                label:_('confirm_password'),
                 required:true,
                 input_params:{
                     type:'password',
-                    placeholder:"Potvrdite novu lozinku"
+                    placeholder:_('confirm_new_password'),
                 }
             }} errors={errors} control={control}/>
         </Form>

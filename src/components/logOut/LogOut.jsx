@@ -1,5 +1,5 @@
 import {LogoutOutlined} from "@ant-design/icons";
-import {removeAuth, showMessage} from "../../functions/tools";
+import {removeAuth, showMessage,_} from "../../functions/tools";
 import {Button} from "antd";
 import {useHistory} from "react-router-dom";
 import {logout} from "../../services/auth";
@@ -29,7 +29,7 @@ const LogOut = () => {
         disabled={isLoading}
         style={{backgroundColor:'transparent',color:'white',border:'none'}}
     >
-        Odjavi se
+        {_('logout')}
     </Button>
 }
 

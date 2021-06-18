@@ -4,6 +4,7 @@ import FormInput from "../../../../components/formInput/FormInput";
 import {INPUT_TYPE} from "../../../../constants/config";
 import {IdcardOutlined, MailOutlined, PhoneOutlined} from "@ant-design/icons";
 import {getCountries} from "../../../../services/clients";
+import {_} from "../../../../functions/tools";
 
 const ClientForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
 
@@ -28,22 +29,22 @@ const ClientForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
         <FormInput data={{
             type:INPUT_TYPE.TEXT,
             name:'name',
-            label:'Ime',
+            label:_('client_name'),
             required:true,
             input_params:{
                 disabled:disabled,
-                placeholder:"Unesite ime i prezime"
+                placeholder:_('client_name_placeholder')
             }
         }} errors={errors} control={control}/>
 
         <FormInput data={{
             type:INPUT_TYPE.SELECT,
             name:'country_id',
-            label:'Drzava',
+            label:_('client_country'),
             required:true,
             input_params:{
                 disabled:disabled,
-                placeholder:"Izaberite drzavu"
+                placeholder:_('client_country_placeholder')
             },
             options:countryOptions
         }} errors={errors} control={control}/>
@@ -51,24 +52,24 @@ const ClientForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
         <FormInput data={{
             type:INPUT_TYPE.TEXT,
             name:'identification_document_no',
-            label:'Broj LK/Pasosa',
+            label:_('identification_document_no'),
             required:true,
             input_params:{
                 disabled:disabled,
-                placeholder:"Unesite broj lk/pasosa"
+                placeholder:_('identification_document_placeholder')
             },
-            tooltip:"Unesite broj licne karte ili pasosa",
+            tooltip:_('passport_len'),
             icon:<IdcardOutlined className="site-form-item-icon" />
         }} errors={errors} control={control}/>
 
         <FormInput data={{
             type:INPUT_TYPE.TEXT,
             name:'phone_no',
-            label:'Telefon',
+            label:_('phone_no'),
             required:true,
             input_params:{
                 disabled:disabled,
-                placeholder:"Unesite broj telefona",
+                placeholder:_('phone_placeholder'),
             },
             icon:<PhoneOutlined className="site-form-item-icon" />
         }} errors={errors} control={control}/>
@@ -76,49 +77,23 @@ const ClientForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
         <FormInput data={{
             type:INPUT_TYPE.TEXT,
             name:'email',
-            label:'Email',
+            label:_('email'),
             required:true,
             input_params:{
                 disabled:disabled,
-                placeholder:"Unesite email",
+                placeholder:_('email_placeholder')
             },
             icon:<MailOutlined className="site-form-item-icon" />
         }} errors={errors} control={control}/>
 
-        {/*<FormInput data={{
-            type:INPUT_TYPE.DATE,
-            name:'date_of_first_reservation',
-            label:'Datum prve rezervacije',
-            required:true,
-            input_params:{
-                style:{width:'100%'},
-                disabled:disabled,
-                placeholder:"Izaberite datum prve rezervacije",
-                allowClear:true
-            }
-        }} errors={errors} control={control}/>
-
-        <FormInput data={{
-            type:INPUT_TYPE.DATE,
-            name:'date_of_last_reservation',
-            label:'Datum zadnje rezervacije',
-            required:true,
-            input_params:{
-                style:{width:'100%'},
-                disabled:disabled,
-                placeholder:"Izaberite datum zadnje rezervacije",
-                allowClear:true
-            }
-        }} errors={errors} control={control}/>*/}
-
         <FormInput data={{
             type:INPUT_TYPE.TEXTAREA,
             name:'remarks',
-            label:'Napomena',
+            label:_('remarks'),
             required:false,
             input_params:{
                 disabled:disabled,
-                placeholder:"Napomena...",
+                placeholder:_('remarks_placeholder'),
                 allowClear:true
             }
         }} errors={errors} control={control}/>

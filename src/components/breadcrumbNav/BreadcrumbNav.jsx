@@ -1,6 +1,6 @@
 import {Breadcrumb} from "antd";
 import {useLocation,Link} from 'react-router-dom';
-import {toTitleCase} from "../../functions/tools";
+import {toTitleCase,_} from "../../functions/tools";
 
 const BreadcrumbNav = () => {
 
@@ -12,7 +12,7 @@ const BreadcrumbNav = () => {
         {Array(path.length).fill('').map((item,index)=>{
             return <Breadcrumb.Item key={index}>
                 <Link to={path.slice(0,index+1).join('/')}>
-                    {(index===0)?'Home':toTitleCase(path[index])}
+                    {(index===0)?_('home'):toTitleCase(_(path[index]) || '')}
                 </Link>
             </Breadcrumb.Item>
         })}

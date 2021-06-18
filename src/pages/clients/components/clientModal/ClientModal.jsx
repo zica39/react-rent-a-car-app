@@ -1,13 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {Modal, Button, message} from 'antd';
+import {Modal, Button} from 'antd';
 import {SaveOutlined} from "@ant-design/icons";
 import EditShowForm from "../clientForm/ClientForm";
 import {FORM_MODE, MESSAGE_TYPE} from "../../../../constants/config";
 import {createClient, getClient, updateClient} from "../../../../services/clients";
-import {showMessage} from "../../../../functions/tools";
-import {getReservation, updateReservation} from "../../../../services/reservations";
-import moment from "moment";
-import * as yup from "yup";
+import {showMessage, _} from "../../../../functions/tools";
 
 const ClientModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubmit,reset},queryClient}) => {
     const [isLoading,setIsLoading] = useState(false);
@@ -33,7 +30,7 @@ const ClientModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
                 showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
             });
         }
-    },[openModal]);
+    },[openModal,reset]);
     const handleCancel = () => {
         if(isLoading === false)
             setOpenModal({...openModal,open:false});
@@ -43,8 +40,8 @@ const ClientModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
         if(openModal.open && openModal.mode ===FORM_MODE.CREATE){
             console.log(data);
             setIsLoading(true);
-            createClient(data).then(res=>{
-                queryClient.invalidateQueries('clients');
+            createClient(data).then(()=>{
+                queryClient.invalidateQueries('clients').then();
                 showMessage('Klient je uspjesno kreiran!', MESSAGE_TYPE.SUCCESS);
                 setIsLoading(false);
                 setOpenModal({});
@@ -55,7 +52,7 @@ const ClientModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
         }else  if(openModal.open && openModal.mode ===FORM_MODE.EDIT){
             setIsLoading(true);
             updateClient(openModal.id, data).then(()=>{
-                queryClient.invalidateQueries('clients');
+                queryClient.invalidateQueries('clients').then();
                 showMessage('Podaci o klijentu su uspjeno izmjenjeni!!!', MESSAGE_TYPE.SUCCESS);
                 setOpenModal({});
                 setIsLoading(false);
@@ -68,11 +65,11 @@ const ClientModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
 
     const footer = (openModal.mode===FORM_MODE.EDIT || openModal.mode===FORM_MODE.CREATE)? [
         <Button disabled={isLoading} className="login-form-button" key='cancel' onClick={handleCancel}>
-            Odustani
+            {_('cancel')}
         </Button>,
 
         <Button loading={isLoading} type="primary" key="ok" form="client-form" icon={<SaveOutlined />} htmlType="submit" className="login-form-button">
-            Sacuvaj
+            {_('save')}
         </Button>
     ]:[
         <Button loading={isLoading} key="close" className="login-form-button" onClick={()=>{setOpenModal({})}}>

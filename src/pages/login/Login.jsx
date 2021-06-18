@@ -1,32 +1,25 @@
 import React,{useState} from 'react';
 import { Row,Col, Typography } from 'antd';
 import { UserOutlined} from '@ant-design/icons';
-import {saveAuth, error, _, getLang} from "../../functions/tools";
+import {saveAuth, error, _} from "../../functions/tools";
 import {useHistory} from 'react-router-dom';
 import {ROLES} from "../../constants/config";
 
 import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import {loginSchema} from "../../constants/schemes";
 
 import LoginForm from "./components/loginForm/LoginForm";
-import{login,me} from "../../services/auth";
+import {login,me} from "../../services/auth";
 
-const schema = yup.object().shape({
-    email: yup.string().email().required(),
-    password: yup.string()
-        .required('required')
-        .min(4, 'Password is too short - should be 4 chars minimum.')
-        .max(12,'Password is too long - should be 12 chars maximum.')
-        .matches(/^[a-zA-Z0-9!#%&]*$/g, 'Password can only contain Latin letters, numbers and chars(!,#,%,&)')
-});
+
 
 const Login = () => {
 
     const {formState: { errors }, handleSubmit, control} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onChange',
-        resolver: yupResolver(schema),
+        resolver: yupResolver(loginSchema()),
         defaultValues:{
             email:'',
             password:'',
@@ -51,27 +44,20 @@ const Login = () => {
                       name:res?.data?.name,
                       role:res?.data?.role_id === 1? ROLES.EMPLOYEE:ROLES.CLIENT,
                       token:token
-                  });
+                  },values.remember);
                   history.push('/');
               }).catch(err=>{
-                  error(err.name,err?.response?.statusText);
+                  error(err?.response?.data?.message);
                   setIsLoading(false);
               })
           }else{
-              error('Gresk','Problemi sa internet konekcijom');
+              error(_('error'),'');
           }
         }).catch(err=>{
-            console.log(err?.response);
-            console.log(err?.name);
-            console.log(err?.message)
-            console.log(err?.status);//401 ....
-            error(err.name,err?.response?.statusText);
+            error(_(err.name.toLowerCase()),_(err?.response?.status+'_login'));
             setIsLoading(false);
         })
-
     };
-    //console.log(_('login','en'))
-    //console.log(getLang())
 
     return (
         <Row type="flex" justify="center" align="center">
