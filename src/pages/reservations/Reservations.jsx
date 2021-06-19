@@ -1,4 +1,4 @@
-import { Space, Button, DatePicker, message, Spin} from 'antd';
+import { Space, Button, DatePicker, Spin} from 'antd';
 import { InfinityTable  as Table } from 'antd-table-infinity';
 import { EditOutlined,PlusSquareOutlined,DeleteOutlined,SearchOutlined } from '@ant-design/icons';
 import {useState} from "react";
@@ -6,29 +6,18 @@ import {useHistory} from 'react-router-dom';
 import EditModal from "./components/editModal/EditModal";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import {FORM_MODE, MESSAGE_TYPE} from "../../constants/config";
-import {concatData1, insertKey, showConfirm, showMessage} from "../../functions/tools";
-import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from "react-query";
+import {concatData1, showConfirm, showMessage,_} from "../../functions/tools";
+import {useInfiniteQuery, useMutation, useQueryClient} from "react-query";
 import {deleteReservation, getReservations} from "../../services/reservations";
-import {getVehicles} from "../../services/cars";
-
-const schema = yup.object().shape({
-    to_date: yup.date().required(),
-    from_date: yup.date().required(),
-    rent_location_id:yup.number().integer().required(),
-    return_location_id:yup.number().integer().required(),
-    total_price:yup.number().required(),
-    vehicle_id:yup.number().integer().required(),
-    client_id:yup.number().integer().required()
-});
+import {reservationScheme} from "../../constants/schemes";
 
 const Reservations = () => {
 
     const {formState: { errors }, handleSubmit, control,reset,setValue,getValues} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onChange',
-        resolver: yupResolver(schema),
+        resolver: yupResolver(reservationScheme()),
         defaultValues:{
             to_date:'',
             from_date:'',
@@ -40,54 +29,53 @@ const Reservations = () => {
         return {
             onClick: () => {
                 console.log(record); //record.id
-                setOpenModal({open:true,title:'Informacije o rezervaciji',mode:FORM_MODE.SHOW,id:record.id});
+                setOpenModal({open:true,title:_('reservation_info'),mode:FORM_MODE.SHOW,id:record.id});
             }
         };
     }
 
     const history = useHistory();
     const[openModal,setOpenModal] = useState({});
-    const[isSearching,setIsSearching] = useState(false);
     const[search,setSearch] = useState('');
     const columns = [
         {
-            title: 'Ime klijenta',
+            title: _('reservation_client_name'),
             dataIndex: ['client','name'],
         },
         {
-            title: 'Broj tablica',
+            title: _('plate_no'),
             dataIndex: ['vehicle','plate_no'],
         },
         {
-            title: 'Datum od',
+            title: _('from_date'),
             dataIndex: 'from_date',
         },
         {
-            title: 'Datum do',
+            title: _('to_date'),
             dataIndex: 'to_date',
         },
         {
-            title: 'Lokacija preuzimanja',
+            title: _('rent_location'),
             dataIndex: ['rent_location','name'],
         },
         {
-            title: 'Lokacija vracanja',
+            title: _('return_location'),
             dataIndex: ['return_location','name'],
         },
         {
-            title: 'Ukupna cijena',
+            title: _("reservation_total_price"),
             dataIndex: 'total_price',
         },
         {
-            title: 'Action',
+            title: _('action'),
             key: 'action',
             render: (text, record) => (
                 // record.id
                 <Space size="middle">
-                    <Button onClick={(e)=>{e.stopPropagation();setOpenModal({open:true,title:'Izmjeni rezervaciju',mode:FORM_MODE.EDIT,id:record.id}); }} icon={<EditOutlined />}/>
+                    <Button onClick={(e)=>{e.stopPropagation();setOpenModal({open:true,title:_('edit_reservation'),mode:FORM_MODE.EDIT,id:record.id}); }} icon={<EditOutlined />}/>
                     <Button onClick={(e)=>{
                         e.stopPropagation();
-                        showConfirm('Obrisi rezervaciju',<DeleteOutlined />,'Da li ste sigurni?',()=>{
+                        showConfirm(_('delete_reservation'),<DeleteOutlined />,_('question'),()=>{
                             return new Promise(function(myResolve, myReject) {
                                 deleteMutation.mutate(record.id,{
                                     onSuccess:res=>myResolve(res),
@@ -121,32 +109,33 @@ const Reservations = () => {
     if(isError) showMessage(error, MESSAGE_TYPE.ERROR);
 
     const handleFetch = () => {
-        if(hasNextPage)fetchNextPage();
+        if(hasNextPage)fetchNextPage().then();
     };
 
     const deleteMutation = useMutation(deleteReservation, {
         onSuccess: () => {
-            message.success('Rezervacija uspjesno obrisna');
-            queryClient.invalidateQueries('reservations');
+            showMessage(_('reservation_delete_success'), MESSAGE_TYPE.SUCCESS);
+            queryClient.invalidateQueries('reservations').then();
         },
-        onError: (error) => {
-            message.error(error?.response?.statusText);
+        onError: (err) => {
+            showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
         }
     })
 
     return ( <>
         <Space style={{ marginTop: 10,display:'flex',justifyContent:'space-between' }}>
-            <Button icon={<PlusSquareOutlined />} onClick={()=>history.push('/reservations/create')} > Dodaj rezervaciju</Button>
+            <Button icon={<PlusSquareOutlined />} onClick={()=>history.push('/reservations/create')} > {_('add_reservation_btn')}</Button>
             <div>
                 <DatePicker.RangePicker onChange={(e)=>{
                     if(e) {
-                        console.log(e[0]._d)
-                        setIsSearching(true);
+                        //console.log(e[0]._d)
+                        setSearch(e[0]._d)
+
                     }else{
-                        setIsSearching(false);
+                       setSearch('')
                     }
                 }} />
-                <Button style={{paddingTop:2,pointerEvents:"none"}}  loading={isSearching} icon={<SearchOutlined />} />
+                <Button style={{paddingTop:2,pointerEvents:'none'}}  icon={<SearchOutlined />} />
             </div>
 
             <EditModal
@@ -163,14 +152,12 @@ const Reservations = () => {
             columns={columns}
             dataSource={concatData1(data)}
             onFetch={handleFetch}
-            /*pageSize={10}
-            total={data?.pages[0]?.data?.total}*/
             onRow={onRowClick}
             className='hover-row'
             bordered={true}
             pagination={false}
             scroll={{ y: window.innerHeight-250 }} />
-        {(isFetching && !isFetchingNextPage)&&<Spin tip="Loading..." />}
+        {(isFetching && !isFetchingNextPage)&&<Spin tip={_('loading')} />}
     </>)
 
 }

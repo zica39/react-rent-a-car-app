@@ -3,6 +3,7 @@ import {Form} from "antd";
 import FormInput from "../../../../components/formInput/FormInput";
 import {INPUT_TYPE,CAR_MIN_YEAR} from "../../../../constants/config";
 import {getVehicleTypes} from "../../../../services/cars";
+import {_} from "../../../../functions/tools"
 
 
 const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
@@ -28,10 +29,10 @@ const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
         <FormInput data={{
             type: INPUT_TYPE.TEXT,
             name:'plate_no',
-            label:'Tablice',
+            label:_('plate_no'),
             required:true,
             input_params:{
-                placeholder:"Unesite broj tablica",
+                placeholder:_('plate_no_placeholder'),
                 disabled:disabled
             },
             tooltip:"Tablice su formata XX-XXNNN"
@@ -40,14 +41,14 @@ const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
         <FormInput data={{
             type: INPUT_TYPE.NUMBER,
             name:'production_year',
-            label:'Godina',
+            label:_('production_year'),
             required:true,
             input_params: {
                 min: CAR_MIN_YEAR,
                 max: (new Date()).getFullYear(),
                 step: 1,
                 disabled:disabled,
-                placeholder:"Unesite godinu proizvodnje",
+                placeholder:_('production_year_placeholder'),
                 style:{width:'100%'}
             }
         }} errors={errors} control={control}/>
@@ -55,10 +56,10 @@ const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
         <FormInput data={{
             type:INPUT_TYPE.SELECT,
             name:'car_type_id',
-            label:'Tip vozila',
+            label:_('car_type'),
             required:true,
             input_params:{
-                placeholder:"Izaberite tip vozila",
+                placeholder:_('car_type_placeholder'),
                 disabled:disabled
             },
             options:carTypeOptions
@@ -67,13 +68,13 @@ const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
         <FormInput data={{
             type: INPUT_TYPE.NUMBER,
             name:'no_of_seats',
-            label:'Broj sjedista',
+            label:_('no_of_seats'),
             required:true,
             disabled:disabled,
             input_params:{
                 disabled:disabled,
-                placeholder:"Unesite broj sjedista",
-                min:0,
+                placeholder:_('no_of_seats_placeholder'),
+                min:2,
                 max:10,
                 step:1,
                 style:{width:'100%'}
@@ -84,13 +85,12 @@ const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
         <FormInput data={{
             type: INPUT_TYPE.NUMBER,
             name:'price_per_day',
-            label:'Cijena',
+            label:_('price_per_day'),
             required:true,
             disabled:disabled,
-            /*tooltip:'Cijena po danu',*/
             input_params:{
                 disabled:disabled,
-                placeholder:"Unesite cijenu po danu",
+                placeholder:_('price_per_day_placeholder'),
                 min:0,
                 formatter:value => `${value}€`,
                 parser:value => value.replace('€', ''),
@@ -102,10 +102,10 @@ const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
         <FormInput data={{
             type: INPUT_TYPE.TEXTAREA,
             name:'remarks',
-            label:'Napomena',
+            label:_('remarks'),
             required:false,
             input_params:{
-                placeholder:"Napomena...",
+                placeholder:_('remarks_placeholder'),
                 allowClear:true,
                 disabled:disabled
             }

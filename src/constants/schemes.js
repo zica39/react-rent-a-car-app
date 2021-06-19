@@ -1,5 +1,6 @@
 import * as yup from "yup";
 import {_} from "../functions/tools";
+import {CAR_MIN_YEAR} from "./config";
 
 export const loginSchema = () => yup.object().shape({
     email: yup.string().email(_('email_valid')).required(_('required_email')),
@@ -38,5 +39,30 @@ export const clientScheme = () => {
         remarks:yup.string().max(500)
     });
 }
+
+export const vehicleScheme = () => {
+    const car_plate = new RegExp(/^[A-Z]{1,3} [A-Z]{1,2}[0-9]{3,4}$/g)
+    return  yup.object().shape({
+        plate_no: yup.string().matches(car_plate,_('car_plate')),
+        production_year:yup.number().integer().typeError(_('required')).required(_('required')).min(CAR_MIN_YEAR).max((new Date()).getFullYear()),
+        car_type_id:yup.number().integer().required(_('required')),
+        no_of_seats: yup.number().integer().typeError(_('required')).required(_('required')).min(2).max(10),
+        price_per_day:yup.number().min(0).moreThan(0,_('price')),
+        remarks:yup.string().nullable().max(500)
+    });
+}
+
+export const reservationScheme = () => {
+    return yup.object().shape({
+        to_date: yup.date().typeError(_('required')).required(),
+        from_date: yup.date().typeError(_('required')).required(),
+        rent_location_id:yup.number().integer().typeError(_('required')).required(_('required')),
+        return_location_id:yup.number().integer().typeError(_('required')).required(_('required')),
+        total_price:yup.number().required().moreThan(0,_('total_price')),
+        vehicle_id:yup.number().integer().required(_('required')),
+        client_id:yup.number().integer().typeError(_('required')).required(_('required'))
+    });
+}
+
 
 

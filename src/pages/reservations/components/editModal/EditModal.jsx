@@ -6,7 +6,7 @@ import {getReservation} from "../../../../services/reservations";
 import {FORM_MODE, MESSAGE_TYPE} from "../../../../constants/config";
 import moment from 'moment';
 import {updateReservation} from "../../../../services/reservations";
-import {getEquipmentData, getEquipmentObj, setEquipmentData, showMessage} from "../../../../functions/tools";
+import {getEquipmentData, getEquipmentObj, setEquipmentData, showMessage, _} from "../../../../functions/tools";
 
 const EditModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubmit,reset,getValues,setValue},queryClient}) => {
     const [isLoading,setIsLoading] = useState(false);
@@ -16,8 +16,6 @@ const EditModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubm
         if(isLoading === false)
             setOpenModal({...openModal,open:false});
     };
-
-   // console.log(control)
 
     const onFinish = (data) => {
         //let formData = data;
@@ -32,9 +30,9 @@ const EditModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubm
 
         console.log(formData)
 
-        updateReservation(openModal.id, formData).then(res=>{
-            queryClient.invalidateQueries('reservations');
-            showMessage('Rezervacija je uspjesno izmjenjena!', MESSAGE_TYPE.SUCCESS);
+        updateReservation(openModal.id, formData).then(()=>{
+            queryClient.invalidateQueries('reservations').then();
+            showMessage(_('reservation_edit_success'), MESSAGE_TYPE.SUCCESS);
             setOpenModal({});
             setIsLoading(false);
         }).catch(err=>{
@@ -67,8 +65,7 @@ const EditModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubm
                         ...getEquipmentObj(data)
                     })
                 }).catch(err=>{
-                    //console.log(err?.response?.statusText);
-                    message.error(err?.response?.statusText);
+                    showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
                 })
             }
         }else{
@@ -76,24 +73,24 @@ const EditModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubm
                 getReservation(openModal.id).then(res=>{
                     setShowData(res?.data);
                 }).catch(err=>{
-                    message.error(err?.response?.statusText);
+                    showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
                 })
             }
 
         }
-    },[openModal])
+    },[openModal,reset])
 
     const footer = (openModal.mode===FORM_MODE.EDIT || openModal.mode===FORM_MODE.CREATE)? [
         <Button disabled={isLoading} className="login-form-button" key='cancel' onClick={handleCancel}>
-            Odustani
+            {_('cancel')}
         </Button>,
 
         <Button loading={isLoading} type="primary" key="ok" form="edit-reservation-form" icon={<SaveOutlined />} htmlType="submit" className="login-form-button">
-            Sacuvaj
+            {_('save')}
         </Button>
     ]:[
         <Button loading={isLoading} key="close" className="login-form-button" onClick={()=>{setOpenModal({})}}>
-            Zatvori
+            {_('close')}
         </Button>
     ]
 

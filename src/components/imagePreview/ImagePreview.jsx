@@ -1,5 +1,5 @@
 import { Image } from 'antd';
-import {FILE_URL} from "../../../../constants/config";
+import {FILE_URL} from "../../constants/config";
 
 function ImagePreview({photos}) {
     return (
@@ -8,7 +8,7 @@ function ImagePreview({photos}) {
                 return <Image
                     key={index}
                     width={100}
-                    src={FILE_URL +  el.photo}
+                    src={FILE_URL +  el?.photo}
                 />
             })}
 

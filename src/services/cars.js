@@ -20,7 +20,9 @@ export async function getVehicles (queryKey) {
 export async function getAvailableVehicles (queryKey) {
     //console.log(queryKey)
     const page = queryKey?.pageParam || 1;
-    const search = queryKey?.queryKey[1];
+    const search = {...queryKey?.queryKey[1]};
+    search.start_date = search.start_date || '1900-01-01';
+    search.end_date = search.start_date || '2100-01-01';
     const res = await axiosInstance.get('/cars-available',{
         params: {...search,page:page},
         headers:{'Authorization': getToken()}

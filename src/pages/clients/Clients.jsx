@@ -153,7 +153,7 @@ const Clients = () => {
             bordered={true}
             pagination={false}
             scroll={{ y: window.innerHeight-300 }} />
-        {(isFetching && !isFetchingNextPage)&&<Spin tip="Loading..." />}
+        {(isFetching && !isFetchingNextPage)&&<Spin tip={_('loading')} />}
     </>)
 
 }

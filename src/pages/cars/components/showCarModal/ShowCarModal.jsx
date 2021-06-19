@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import { Modal, Button, message } from 'antd';
-import {FORM_MODE} from "../../../../constants/config";
+import {Modal, Button, Spin} from 'antd';
+import {FORM_MODE, MESSAGE_TYPE} from "../../../../constants/config";
 import {getVehicle} from "../../../../services/cars";
-import ImagePreview from "../imagePreview/ImagePreview";
+import ImagePreview from "../../../../components/imagePreview/ImagePreview";
+import {showMessage,_} from "../../../../functions/tools";
 
 const ShowCarModal = ({openModal,setOpenModal,title}) => {
     const [isLoading,setIsLoading] = useState(false);
@@ -10,13 +11,15 @@ const ShowCarModal = ({openModal,setOpenModal,title}) => {
 
     useEffect(()=>{
         console.log(openModal.id)
+        setIsLoading(true)
         if(openModal.open && openModal.id && openModal.mode === FORM_MODE.SHOW){
             getVehicle(openModal.id).then(res=>{
                 let data = res?.data;
                 setData(data);
+                setIsLoading(false)
             }).catch(err=>{
-                //console.log(err?.response?.statusText);
-                message.err(err?.response?.statusText)
+                showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
+                setIsLoading(false)
             })
         }
         },[openModal]);
@@ -27,24 +30,27 @@ const ShowCarModal = ({openModal,setOpenModal,title}) => {
     };
 
     const footer =  [
-        <Button loading={isLoading} key="close" className="login-form-button" onClick={()=>{setOpenModal({})}}>
-            Zatvori
+        <Button key="close" className="login-form-button" onClick={()=>{setOpenModal({})}}>
+            {_('close')}
         </Button>
     ]
 
     return (
         <>
             <Modal title={title} visible={openModal.open && openModal.mode === FORM_MODE.SHOW} onCancel={handleCancel} footer={footer}>
-
+                {isLoading?
+                    <Spin tip={_('loading')} />:
+                <>
                     <p>Broj tablica :{data?.plate_no}</p>
                     <p>Tip vozila:{data?.car_type_id}</p>
                     <p>Broj sjedista:{data?.no_of_seats}</p>
                     <p>Cijena po danu :{data?.price_per_day}</p>
                     <p>Godina prozivodnje :{data?.production_year}</p>
                     <p>Napomene :{data?.remarks}</p>
+                    <ImagePreview photos={data?.photos?data?.photos:[]} />
+                </>
+                }
 
-
-                <ImagePreview photos={data?.photos?data?.photos:[]} />
             </Modal>
         </>
     );

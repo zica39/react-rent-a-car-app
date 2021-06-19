@@ -6,34 +6,21 @@ import ShowCarModal from "./components/showCarModal/ShowCarModal";
 import StepFormModal from "./components/stepFormModal/StepFormModal";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import {FORM_MODE, CAR_MIN_YEAR, MESSAGE_TYPE} from "../../constants/config";
-import {concatData1, insertKey, pullData, showConfirm, showMessage} from "../../functions/tools";
-import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from "react-query";
+import {FORM_MODE, MESSAGE_TYPE} from "../../constants/config";
+import {concatData1, pullData, showConfirm, showMessage, _} from "../../functions/tools";
+import {useInfiniteQuery, useMutation, useQueryClient} from "react-query";
 import {deleteVehicle, getVehicles} from "../../services/cars";
-import {getClients} from "../../services/clients";
+import {vehicleScheme} from "../../constants/schemes";
 
-const car_plate = new RegExp(/^[A-Z]{1,3} [A-Z]{1,2}[0-9]{3,4}$/g)
-const schema = yup.object().shape({
-    plate_no: yup.string().matches(car_plate,'Neispravan format broja tablica'),
-    production_year:yup.number().integer().required().min(CAR_MIN_YEAR).max((new Date()).getFullYear()),
-    car_type_id:yup.number().integer().required(),
-    no_of_seats: yup.number().integer().min(0).max(10),
-    price_per_day:yup.number().min(0),
-    remarks:yup.string().nullable().max(500)
-});
-
-const NEW_CAR = {open:true,title:'Kreiraj novo vozilo',mode:FORM_MODE.CREATE,id:0};
 const Cars = () => {
 
+    const NEW_CAR = {open:true,title:_('create_new_vehicle'),mode:FORM_MODE.CREATE,id:0};
     const {formState: { errors }, handleSubmit, control,reset} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onChange',
-        resolver: yupResolver(schema),
+        resolver: yupResolver(vehicleScheme()),
         defaultValues:{
             plate_no:'',
-            production_year:'',
-            no_of_seats:'',
             price_per_day:0,
             remarks:''
         }
@@ -43,7 +30,7 @@ const Cars = () => {
         return {
             onClick: () => {
                 console.log(record.id); //record.id
-                setOpenModal({open:true,title:'Informacije o vozilu',mode:FORM_MODE.SHOW,id:record.id});
+                setOpenModal({open:true,title:_('vehicle_info'),mode:FORM_MODE.SHOW,id:record.id});
             }
         };
     }
@@ -53,31 +40,31 @@ const Cars = () => {
 
     const columns = [
         {
-            title: 'Broj tablica',
+            title: _("plate_no"),
             dataIndex: 'plate_no',
         },
         {
-            title: 'Goidna',
+            title: _("production_year"),
             dataIndex: 'production_year',
         },
         {
-            title: 'Tip vozila',
+            title: _("car_type"),
             dataIndex: ['car_type','name'],
         },
         {
-            title: 'Broj sjedista',
+            title: _("no_of_seats"),
             dataIndex: 'no_of_seats',
         },
         {
-            title: 'Cijena',
+            title: _("price_per_day"),
             dataIndex: 'price_per_day',
         },
         {
-            title: 'Napomena',
+            title: _("remarks"),
             dataIndex: 'remarks',
         },
         {
-            title: 'Action',
+            title: _("action"),
             key: 'action',
             render: (text, record) => (
                // record.id
@@ -85,12 +72,12 @@ const Cars = () => {
 
                     <Button onClick={(e)=>{
                         e.stopPropagation();
-                        setOpenModal({open:true,title:'Izmjeni vozilo',mode:FORM_MODE.EDIT,id:record.id});
+                        setOpenModal({open:true,title:_('edit_vehicle'),mode:FORM_MODE.EDIT,id:record.id});
                     }} icon={<EditOutlined />}/>
 
                     <Button onClick={(e)=>{
                         e.stopPropagation();
-                        showConfirm('Obrisi automobil',<DeleteOutlined />,'Da li ste sigurni?',()=>{
+                        showConfirm(_('delete_vehicle'),<DeleteOutlined />,_('question'),()=>{
                             return new Promise(function(myResolve, myReject) {
                                deleteMutation.mutate(record.id,{
                                    onSuccess:res=>myResolve(res),
@@ -125,13 +112,13 @@ const Cars = () => {
     // console.log((data))
 
     const handleFetch = () => {
-        if(hasNextPage)fetchNextPage();
+        if(hasNextPage)fetchNextPage().then();
     };
 
     const deleteMutation = useMutation(deleteVehicle, {
         onSuccess: () => {
-            queryClient.invalidateQueries('cars');
-            showMessage('Vozilo uspjesno obrisnao!', MESSAGE_TYPE.SUCCESS);
+            queryClient.invalidateQueries('cars').then();
+            showMessage(_('vehicle_delete_success'), MESSAGE_TYPE.SUCCESS);
         },
         onError: (err) => {
             showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
@@ -144,8 +131,8 @@ const Cars = () => {
 
     return ( <>
         <Space style={{ marginTop: 10,display:'flex',justifyContent:'space-between' }}>
-            <Button icon={<PlusSquareOutlined />} onClick={()=>{setOpenModal(NEW_CAR);}}>Dodaj vozilo</Button>
-            <Input.Search placeholder="Pretrazi vozilo" allowClear onSearch={(e)=>setSearch(e)} style={{ width: 200 }} />
+            <Button icon={<PlusSquareOutlined />} onClick={()=>{setOpenModal(NEW_CAR);}}>{_('add_vehicle_btn')}</Button>
+            <Input.Search placeholder={_('search_vehicles')} allowClear onSearch={(e)=>setSearch(e)} style={{ width: 200 }} />
 
             <StepFormModal
                 openModal={openModal}
@@ -167,14 +154,12 @@ const Cars = () => {
             columns={columns}
             dataSource={concatData1(data)}
             onFetch={handleFetch}
-            /*pageSize={10}
-            total={data?.pages[0]?.data?.total}*/
             onRow={onRowClick}
             className='hover-row'
             bordered={true}
             pagination={false}
             scroll={{ y: window.innerHeight-250 }} />
-        {(isFetching && !isFetchingNextPage)&&<Spin tip="Loading..." />}
+        {(isFetching && !isFetchingNextPage)&&<Spin tip={_('loading')} />}
     </>)
 
 }

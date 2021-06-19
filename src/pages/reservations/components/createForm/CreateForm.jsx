@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {Col, Form, Input, Row} from "antd";
+import {Col, Form, Input, Row, Collapse} from "antd";
 import FormInput from "../../../../components/formInput/FormInput";
 import {INPUT_TYPE} from "../../../../constants/config";
 import {getEquipment, getLocations} from "../../../../services/reservations";
 import {getClientsOptions} from "../../../../services/clients";
-import {getInitValues} from "../../../../functions/tools";
+import {_} from "../../../../functions/tools";
 
 const CreateForm = ({onFinish,handleSubmit,errors,control,setValue,getValues,price_per_day}) => {
 
@@ -34,7 +34,7 @@ const CreateForm = ({onFinish,handleSubmit,errors,control,setValue,getValues,pri
         <FormInput data={{
             type: INPUT_TYPE.TEXT,
             name:'vehicle',
-            label:'Vozilo',
+            label:_('vehicle'),
             required:false,
             input_params:{
                 disabled:true,
@@ -45,10 +45,10 @@ const CreateForm = ({onFinish,handleSubmit,errors,control,setValue,getValues,pri
         <FormInput data={{
             type:INPUT_TYPE.SELECT_ASYNC,
             name:'client_id',
-            label:'Klijent',
+            label:_('client'),
             required:true,
             helper_params:{
-                placeholder:"Izaberite klijenta",
+                placeholder:_('select_client'),
                 loadOptions:getClientsOptions,
                 defaultValue:''
             }
@@ -57,11 +57,11 @@ const CreateForm = ({onFinish,handleSubmit,errors,control,setValue,getValues,pri
         <FormInput data={{
             type:INPUT_TYPE.DATE,
             name:'from_date',
-            label:'Datum od',
+            label:_('from_date'),
             required:true,
             input_params:{
                 style:{width:'100%'},
-                placeholder:"Izaberite datum od",
+                placeholder:_('from_date_placeholder'),
                 allowClear:true,
                 onChange:(e) => {
                     let to_date = getValues('to_date');
@@ -82,11 +82,11 @@ const CreateForm = ({onFinish,handleSubmit,errors,control,setValue,getValues,pri
         <FormInput data={{
             type:INPUT_TYPE.DATE,
             name:'to_date',
-            label:'Datum do',
+            label:_('to_date'),
             required:true,
             input_params:{
                 style:{width:'100%'},
-                placeholder:"Izaberite datum do",
+                placeholder:_('to_date_placeholder'),
                 allowClear:true,
                 onChange:(e) => {
                     let from_date = getValues('from_date');
@@ -107,10 +107,10 @@ const CreateForm = ({onFinish,handleSubmit,errors,control,setValue,getValues,pri
         <FormInput data={{
             type:INPUT_TYPE.SELECT,
             name:'rent_location_id',
-            label:'Lokacija preuzimanja',
+            label:_("rent_location"),
             required:true,
             input_params:{
-                placeholder:"Izaberite lokaciju preuzimanja"
+                placeholder:_("rent_location_placeholder"),
             },
             options:locationOptions
         }} errors={errors} control={control}/>
@@ -118,14 +118,16 @@ const CreateForm = ({onFinish,handleSubmit,errors,control,setValue,getValues,pri
         <FormInput data={{
             type:INPUT_TYPE.SELECT,
             name:'return_location_id',
-            label:'Lokacija vracanja',
+            label:_("return_location"),
             required:true,
             input_params:{
-                placeholder:"Izaberite lokaciju vracanja"
+                placeholder:_("return_location_placeholder"),
             },
             options:locationOptions
         }} errors={errors} control={control}/>
-    <p>Dodatna oprema:</p>
+
+        <Collapse defaultActiveKey={['1']} >
+            <Collapse.Panel header={_('equipment')} key="1">
         <Input.Group>
     <Row gutter={12}>
         {equipment.map((e,i)=>{
@@ -145,11 +147,13 @@ const CreateForm = ({onFinish,handleSubmit,errors,control,setValue,getValues,pri
         })}
     </Row>
         </Input.Group>
-        <p>Ukupna cijena:</p>
+            </Collapse.Panel>
+        </Collapse>
+
         <FormInput data={{
             type: INPUT_TYPE.NUMBER,
             name:'total_price',
-            label:'Ukupna cijena',
+            label:_('reservation_total_price'),
             /* required:true,*/
             input_params:{
                 readOnly:true,

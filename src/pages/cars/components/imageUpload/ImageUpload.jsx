@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Upload } from 'antd';
-//import ImgCrop from 'antd-img-crop';
 
 const ImageUpload = ({fileList,setFileList}) => {
-
 
     const onChange = ({ fileList: newFileList}) => {
         setFileList(newFileList);

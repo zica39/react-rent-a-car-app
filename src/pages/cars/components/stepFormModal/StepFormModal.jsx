@@ -6,23 +6,9 @@ import {FILE_URL, FORM_MODE, MESSAGE_TYPE} from "../../../../constants/config";
 import './style.css';
 import ImageUpload from "../imageUpload/ImageUpload";
 import {createVehicle, getVehicle, updateVehicle} from "../../../../services/cars";
-import {showMessage} from "../../../../functions/tools";
+import {showMessage,_} from "../../../../functions/tools";
 
 const { Step } = Steps;
-const steps = [
-    {
-        title: 'Korak 1',
-        description:"Osnovni podaci",
-    },
-    {
-        title: 'Korak 2',
-        description:"Fotografije"
-    },
-    {
-        title: 'Kraj',
-        description: 'Sacuvaj izmjene'
-    },
-];
 
 const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubmit,reset},queryClient}) => {
     const [isLoading,setIsLoading] = useState(false);
@@ -38,7 +24,20 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
     const prev = () => {
         setCurrent(current - 1);
     };
-
+    const steps = [
+        {
+            title: _('step1'),
+            description:_('step1_desc'),
+        },
+        {
+            title: _('step2'),
+            description:_('step2_desc'),
+        },
+        {
+            title: _('finish'),
+            description: _('step3_desc')
+        },
+    ];
 
         useEffect(()=>{
             if(openModal.open && (openModal.mode === FORM_MODE.EDIT || openModal.mode === FORM_MODE.CREATE)){
@@ -62,14 +61,14 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
                             price_per_day:data.price_per_day,
                             remarks:data.remarks
                         })
-                       setFileList(data.photos.map(e=>{return {'uid': e.id,'status': 'done','url': FILE_URL+e.photo }}))
+                       setFileList(data.photos.map(e=>{return {'uid': e.id,'status': 'done','url': FILE_URL+e?.photo }}))
                     }).catch(err=>{
                         //console.log(err?.response?.statusText);
                         showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
                     })
                 }
             }
-        },[openModal])
+        },[openModal,reset])
 
     const onSave = () => {
             console.log(formData)
@@ -85,9 +84,9 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
             //if(photos.length === 0)
 
         if(!openModal.id){
-            createVehicle(form).then(res=>{
-                queryClient.invalidateQueries('cars');
-                showMessage('Vozilo je uspjesno kreirano!', MESSAGE_TYPE.SUCCESS);
+            createVehicle(form).then(()=>{
+                queryClient.invalidateQueries('cars').then();
+                showMessage(_('vehicle_create_success'), MESSAGE_TYPE.SUCCESS);
                 setOpenModal({});
                 setFileList([]);
                 setIsLoading(false);
@@ -96,9 +95,9 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
                 setIsLoading(false);
             })
         }else {
-            updateVehicle(openModal.id, form).then(res=>{
-                queryClient.invalidateQueries('cars');
-                showMessage('Vozilo je uspjesno izmjenjeno!', MESSAGE_TYPE.SUCCESS);
+            updateVehicle(openModal.id, form).then(()=>{
+                queryClient.invalidateQueries('cars').then();
+                showMessage(_('vehicle_edit_success'), MESSAGE_TYPE.SUCCESS);
                 setOpenModal({});
                 setIsLoading(false);
                 setFileList([]);
@@ -123,21 +122,21 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
         setFormData({...data});
         next();
     }
-    const onFinishStep2 = (data) => {
+    const onFinishStep2 = () => {
         if(fileList.length > 0 && fileList.length <= 5){
             next();
         }else{
-            showMessage('Morate postaviti makra jednu fotografju, maksimalno pet', MESSAGE_TYPE.ERROR);
+            showMessage(_('vehicle_photos_error'), MESSAGE_TYPE.ERROR);
         }
     }
 
     const footer =  [
         <Button disabled={isLoading} className="login-form-button" key='cancel' onClick={handleCancel}>
-            Odustani
+            {_('cancel')}
         </Button>,
 
         <Button loading={isLoading} disabled={current!==2} type="primary" key="ok" icon={<SaveOutlined />} onClick={onSave} className="login-form-button">
-            Sacuvaj
+            {_('save')}
         </Button>
     ]
 
@@ -162,15 +161,15 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
                 <div className="steps-action">
                     {current > 0 && (
                         <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
-                            <ArrowLeftOutlined /> Previous
+                            <ArrowLeftOutlined /> {_('previous')}
                         </Button>
                     )}
                     {current < steps.length - 1 && (current===0?
                         <Button loading={isLoading} type="primary" form="edit-car-form" htmlType="submit" className="login-form-button">
-                            Next <ArrowRightOutlined />
+                            {_('next')} <ArrowRightOutlined />
                         </Button>:
                         <Button type="primary" onClick={onFinishStep2}>
-                            Next <ArrowRightOutlined />
+                            {_('next')} <ArrowRightOutlined />
                         </Button>
                     )}
                 </div>
