@@ -5,6 +5,7 @@ import {INPUT_TYPE} from "../../../../constants/config";
 import {IdcardOutlined, MailOutlined, PhoneOutlined} from "@ant-design/icons";
 import {getCountries} from "../../../../services/clients";
 import {_} from "../../../../functions/tools";
+import PropTypes from "prop-types";
 
 const ClientForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
 
@@ -58,7 +59,7 @@ const ClientForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
                 disabled:disabled,
                 placeholder:_('identification_document_placeholder')
             },
-            tooltip:_('passport_len'),
+            tooltip:disabled?'':_('passport_len'),
             icon:<IdcardOutlined className="site-form-item-icon" />
         }} errors={errors} control={control}/>
 
@@ -99,6 +100,14 @@ const ClientForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
         }} errors={errors} control={control}/>
 
     </Form>
+}
+
+ClientForm.propTypes = {
+    onFinish: PropTypes.func.isRequired,
+    handleSubmit: PropTypes.func.isRequired,
+    errors: PropTypes.object.isRequired,
+    control: PropTypes.object.isRequired,
+    disabled: PropTypes.bool
 }
 
 export default ClientForm;

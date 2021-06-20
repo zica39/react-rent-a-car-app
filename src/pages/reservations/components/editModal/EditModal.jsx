@@ -1,15 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import {Modal, Button, message} from 'antd';
+import {Modal, Button, Spin} from 'antd';
 import {SaveOutlined} from "@ant-design/icons";
-import EditForm from "../editForm/EditForm";
 import {getReservation} from "../../../../services/reservations";
 import {FORM_MODE, MESSAGE_TYPE} from "../../../../constants/config";
 import moment from 'moment';
 import {updateReservation} from "../../../../services/reservations";
 import {getEquipmentData, getEquipmentObj, setEquipmentData, showMessage, _} from "../../../../functions/tools";
+import DataView from "../dataView/DataView";
+import ReservationForm from "../reservationForm/ReservationForm";
+import PropTypes from "prop-types";
 
 const EditModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubmit,reset,getValues,setValue},queryClient}) => {
     const [isLoading,setIsLoading] = useState(false);
+    const [isFetching,setIsFetching] = useState(false);
     const[showData,setShowData] = useState({});
 
     const handleCancel = () => {
@@ -45,6 +48,7 @@ const EditModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubm
         if(openModal.open && (openModal.mode===FORM_MODE.EDIT || openModal.mode===FORM_MODE.CREATE)){
             if(openModal.id) {
                 //reset({});
+                setIsFetching(true);
                 getReservation(openModal.id).then(res=>{
                     let data = res?.data;
                     //console.log(data);
@@ -63,17 +67,22 @@ const EditModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubm
                         return_location_id:data.return_location_id,
                         total_price:data.total_price,
                         ...getEquipmentObj(data)
-                    })
+                    });
+                    setIsFetching(false);
                 }).catch(err=>{
                     showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
+                    setIsFetching(false);
                 })
             }
         }else{
             if(openModal.id){
+                setIsFetching(true);
                 getReservation(openModal.id).then(res=>{
                     setShowData(res?.data);
+                    setIsFetching(false);
                 }).catch(err=>{
                     showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
+                    setIsFetching(false);
                 })
             }
 
@@ -85,7 +94,7 @@ const EditModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubm
             {_('cancel')}
         </Button>,
 
-        <Button loading={isLoading} type="primary" key="ok" form="edit-reservation-form" icon={<SaveOutlined />} htmlType="submit" className="login-form-button">
+        <Button loading={isLoading} type="primary" key="ok" form="reservation-form" icon={<SaveOutlined />} htmlType="submit" className="login-form-button">
             {_('save')}
         </Button>
     ]:[
@@ -97,36 +106,34 @@ const EditModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubm
     return (
         <>
             <Modal title={title} visible={openModal.open} onCancel={handleCancel} footer={footer}>
-                {(openModal.mode===FORM_MODE.EDIT || openModal.mode===FORM_MODE.CREATE)?
-                    <EditForm
+                {isFetching?
+                    <Spin tip={_('loading')} />:
+                (openModal.mode===FORM_MODE.EDIT || openModal.mode===FORM_MODE.CREATE)?
+                    <ReservationForm
                         control={control}
                         errors={errors}
+                        setValue={setValue}
+                        getValues={getValues}
                         handleSubmit={handleSubmit}
                         onFinish={onFinish}
-                        getValues={getValues}
-                        setValue={setValue}
+                        isCreate={false}
                     />:
-                    <div>
-                        <h3>Rezervacija:</h3>
-                        <p>Od :{showData?.from_date}</p>
-                        <p>Do:{showData?.to_date}</p>
-                        <p>Lokacija peruzimanja:{showData?.rent_location?.name}</p>
-                        <p>Lokcaija vracanja :{showData?.return_location?.name}</p>
-                        <p>Ukupna cijena :{showData?.total_price}</p>
-                        <h3>Klijent:</h3>
-                        <p>Ime i prezime :{showData?.client?.name}</p>
-                        <h3>Vozilo:</h3>
-                        <p>Broj tablica :{showData?.vehicle?.plate_no}</p>
-                        <p>Godina proizvodnje:{showData?.vehicle?.production_year}</p>
-                        <p>Tip vozila:{showData?.vehicle?.car_type?.name}</p>
-                        <p>Broj sjedista :{showData?.vehicle?.no_of_seats}</p>
-                        <p>Cijena rezervacije po danu :{showData?.vehicle?.price_per_day}</p>
-                        {/*<p>Dodatna oprema: ????</p>*/}
-                    </div>
+                    <DataView showData={showData}/>
                 }
             </Modal>
         </>
     );
 };
 
+EditModal.propTypes = {
+    openModal: PropTypes.shape({
+        id: PropTypes.number,
+        mode: PropTypes.number,
+        open: PropTypes.bool,
+    }),
+    setOpenModal: PropTypes.func.isRequired,
+    title: PropTypes.string,
+    form: PropTypes.object,
+    queryClient: PropTypes.object
+}
 export default EditModal;

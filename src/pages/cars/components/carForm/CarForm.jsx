@@ -3,8 +3,8 @@ import {Form} from "antd";
 import FormInput from "../../../../components/formInput/FormInput";
 import {INPUT_TYPE,CAR_MIN_YEAR} from "../../../../constants/config";
 import {getVehicleTypes} from "../../../../services/cars";
-import {_} from "../../../../functions/tools"
-
+import {_} from "../../../../functions/tools";
+import PropTypes from 'prop-types';
 
 const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
 
@@ -112,6 +112,13 @@ const CarForm = ({onFinish,handleSubmit,errors,control,disabled}) => {
         }} errors={errors} control={control}/>
 
     </Form>
+}
+CarForm.propTypes = {
+    onFinish: PropTypes.func.isRequired,
+    handleSubmit: PropTypes.func.isRequired,
+    errors: PropTypes.object.isRequired,
+    control: PropTypes.object.isRequired,
+    disabled: PropTypes.bool
 }
 
 export default CarForm;

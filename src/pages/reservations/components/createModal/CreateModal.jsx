@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {Modal, Button} from 'antd';
 import {SaveOutlined} from "@ant-design/icons";
-import CreateForm from "../createForm/CreateForm";
 import moment from "moment";
 import {createReservation} from "../../../../services/reservations";
-import {calcDays, getEquipmentData, showMessage} from "../../../../functions/tools";
+import {calcDays, getEquipmentData, showMessage, _} from "../../../../functions/tools";
 import {MESSAGE_TYPE} from "../../../../constants/config";
+import ReservationForm from "../reservationForm/ReservationForm";
+import PropTypes from "prop-types";
 
 const CreateModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubmit,reset,setValue,getValues},queryClient,params}) => {
     const [isLoading,setIsLoading] = useState(false);
@@ -38,9 +39,9 @@ const CreateModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
 
         console.log(formData);
         setIsLoading(true);
-        createReservation(formData).then(res=>{
-            queryClient.invalidateQueries('cars-available');
-            showMessage('Rezervacija je uspjesno kreirana!', MESSAGE_TYPE.SUCCESS);
+        createReservation(formData).then(()=>{
+            queryClient.invalidateQueries('cars-available').then();
+            showMessage(_('reservation_create_success'), MESSAGE_TYPE.SUCCESS);
             setIsLoading(false);
             setOpenModal({});
         }).catch(err=>{
@@ -51,29 +52,43 @@ const CreateModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
 
     const footer =  [
         <Button disabled={isLoading} className="login-form-button" key='cancel' onClick={handleCancel}>
-            Odustani
+            {_('cancel')}
         </Button>,
 
-        <Button loading={isLoading} type="primary" key="ok" form="create-reservation-form" icon={<SaveOutlined />} htmlType="submit" className="login-form-button">
-            Sacuvaj
+        <Button loading={isLoading} type="primary" key="ok" form="reservation-form" icon={<SaveOutlined />} htmlType="submit" className="login-form-button">
+            {_('save')}
         </Button>
     ];
 
     return (
         <>
             <Modal title={title} visible={openModal.open} onCancel={handleCancel} footer={footer}>
-                    <CreateForm
-                        control={control}
-                        errors={errors}
-                        setValue={setValue}
-                        getValues={getValues}
-                        handleSubmit={handleSubmit}
-                        onFinish={onFinish}
-                        price_per_day={openModal?.data?.price_per_day}
-                    />
+                <ReservationForm
+                    control={control}
+                    errors={errors}
+                    setValue={setValue}
+                    getValues={getValues}
+                    handleSubmit={handleSubmit}
+                    onFinish={onFinish}
+                    pricePerDay={openModal?.data?.price_per_day}
+                    isCreate={true}
+                />
             </Modal>
         </>
     );
 };
+
+CreateModal.propTypes = {
+    openModal: PropTypes.shape({
+        id: PropTypes.number,
+        mode: PropTypes.number,
+        open: PropTypes.bool,
+    }),
+    setOpenModal: PropTypes.func.isRequired,
+    title: PropTypes.string,
+    form: PropTypes.object,
+    queryClient: PropTypes.object,
+    params: PropTypes.object
+}
 
 export default CreateModal;

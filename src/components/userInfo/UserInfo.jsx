@@ -2,7 +2,7 @@ import {Avatar,Typography} from "antd";
 import {UserOutlined} from "@ant-design/icons";
 import {auth, removeAuth, showMessage} from "../../functions/tools";
 import {useEffect} from "react";
-import {me, refresh} from "../../services/auth";
+import {me} from "../../services/auth";
 import axios from "axios";
 import {useHistory} from "react-router-dom";
 import {MESSAGE_TYPE} from "../../constants/config";
@@ -12,7 +12,7 @@ const UserInfo = () => {
     const history = useHistory();
 
     useEffect(()=>{
-        me(auth()?.token).then((r)=>{
+        me(auth()?.token).then(()=>{
                 console.log(3)
             }).catch(err=>{
                 if(err?.response?.status === 401){
@@ -21,13 +21,13 @@ const UserInfo = () => {
                     removeAuth();
                     history.push('/login');
                 }else{
-                    showMessage('Problemi sa internet konekcijom,...',MESSAGE_TYPE.WARNING);
+                    showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
                 }
             });
         return () => {
             ourRequest.cancel();
         }
-    },[ourRequest]);
+    },[ourRequest,history]);
 
     const name = auth()?.name;
     return <>

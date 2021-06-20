@@ -9,7 +9,6 @@ import {changePassword} from "../../services/auth";
 import {showMessage,_} from "../../functions/tools";
 import {changePasswordSchema} from "../../constants/schemes";
 
-
 const ChangePassword = () => {
     const[openModal,setOpenModal] = useState(false);
     const[isLoading,setIsLoading] = useState(false);
@@ -25,11 +24,11 @@ const ChangePassword = () => {
     };
     useEffect(()=>{
         if(openModal)reset({});
-    },[openModal])
+    },[openModal,reset])
 
     const onFinish = (data) => {
         setIsLoading(true);
-        changePassword(data).then(res=>{
+        changePassword(data).then(()=>{
             setIsLoading(false);
             showMessage(_('change_password_success'));
             setOpenModal(false);

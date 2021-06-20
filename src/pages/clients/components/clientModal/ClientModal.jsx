@@ -1,19 +1,22 @@
 import React, {useEffect, useState} from 'react';
-import {Modal, Button} from 'antd';
+import {Modal, Button, Spin} from 'antd';
 import {SaveOutlined} from "@ant-design/icons";
 import EditShowForm from "../clientForm/ClientForm";
 import {FORM_MODE, MESSAGE_TYPE} from "../../../../constants/config";
 import {createClient, getClient, updateClient} from "../../../../services/clients";
 import {showMessage, _} from "../../../../functions/tools";
+import PropTypes from "prop-types";
 
 const ClientModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubmit,reset},queryClient}) => {
     const [isLoading,setIsLoading] = useState(false);
+    const [isFetching,setIsFetching] = useState(false);
 
     useEffect(()=>{
          if(openModal.open && openModal.mode === FORM_MODE.CREATE){
             reset({});
         }else if(openModal.open && (openModal.mode === FORM_MODE.EDIT || openModal.mode === FORM_MODE.SHOW) && openModal.id){
-            console.log(openModal.id)
+            console.log(openModal.id);
+            setIsFetching(true);
              getClient(openModal.id).then(res=>{
                 let data = res?.data?.client;
                 // console.log(data);
@@ -24,10 +27,12 @@ const ClientModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
                     identification_document_no: data?.identification_document_no,
                     phone_no: data?.phone_no,
                    /* remarks: data?.remarks*/
-                })
+                });
+                 setIsFetching(false);
             }).catch(err=>{
                 //console.log(err?.response?.statusText);
                 showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
+                 setIsFetching(false);
             });
         }
     },[openModal,reset]);
@@ -42,7 +47,7 @@ const ClientModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
             setIsLoading(true);
             createClient(data).then(()=>{
                 queryClient.invalidateQueries('clients').then();
-                showMessage('Klient je uspjesno kreiran!', MESSAGE_TYPE.SUCCESS);
+                showMessage(_('client_create_success'), MESSAGE_TYPE.SUCCESS);
                 setIsLoading(false);
                 setOpenModal({});
             }).catch(err=>{
@@ -53,7 +58,7 @@ const ClientModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
             setIsLoading(true);
             updateClient(openModal.id, data).then(()=>{
                 queryClient.invalidateQueries('clients').then();
-                showMessage('Podaci o klijentu su uspjeno izmjenjeni!!!', MESSAGE_TYPE.SUCCESS);
+                showMessage(_('client_edit_success'), MESSAGE_TYPE.SUCCESS);
                 setOpenModal({});
                 setIsLoading(false);
             }).catch(err=>{
@@ -73,17 +78,31 @@ const ClientModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
         </Button>
     ]:[
         <Button loading={isLoading} key="close" className="login-form-button" onClick={()=>{setOpenModal({})}}>
-            Zatvori
+            {_('close')}
         </Button>
     ]
 
     return (
         <>
             <Modal title={title} visible={openModal.open} onCancel={handleCancel} footer={footer}>
-                <EditShowForm disabled={openModal.mode===FORM_MODE.SHOW} control={control} errors={errors} handleSubmit={handleSubmit} onFinish={onFinish} />
+                {isFetching?
+                    <Spin style={{marginLeft:'auto'}} tip={_('loading')} />:
+                    <EditShowForm disabled={openModal.mode===FORM_MODE.SHOW} control={control} errors={errors} handleSubmit={handleSubmit} onFinish={onFinish} />
+                }
             </Modal>
         </>
     );
 };
+
+ClientModal.propTypes = {
+    openModal: PropTypes.shape({
+        id: PropTypes.number,
+        mode: PropTypes.number,
+        open: PropTypes.bool,
+    }),
+    setOpenModal: PropTypes.func.isRequired,
+    title: PropTypes.string,
+    form: PropTypes.object
+}
 
 export default ClientModal;

@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {Modal, Button, Spin} from 'antd';
+import {Modal, Button, Spin, List} from 'antd';
 import {FORM_MODE, MESSAGE_TYPE} from "../../../../constants/config";
 import {getVehicle} from "../../../../services/cars";
 import ImagePreview from "../../../../components/imagePreview/ImagePreview";
 import {showMessage,_} from "../../../../functions/tools";
+import PropTypes from 'prop-types';
 
 const ShowCarModal = ({openModal,setOpenModal,title}) => {
     const [isLoading,setIsLoading] = useState(false);
@@ -41,13 +42,21 @@ const ShowCarModal = ({openModal,setOpenModal,title}) => {
                 {isLoading?
                     <Spin tip={_('loading')} />:
                 <>
-                    <p>Broj tablica :{data?.plate_no}</p>
-                    <p>Tip vozila:{data?.car_type_id}</p>
-                    <p>Broj sjedista:{data?.no_of_seats}</p>
-                    <p>Cijena po danu :{data?.price_per_day}</p>
-                    <p>Godina prozivodnje :{data?.production_year}</p>
-                    <p>Napomene :{data?.remarks}</p>
-                    <ImagePreview photos={data?.photos?data?.photos:[]} />
+                    <List
+                        size="small"
+                        bordered
+                        dataSource={[
+                            `${_('plate_no')}: ${data?.plate_no}`,
+                            `${_('production_year')}: ${data?.production_year}`,
+                            `${_('car_type')}: ${data?.car_type?.name}`,
+                            `${_('no_of_seats')}: ${data?.no_of_seats}`,
+                            `${_('price_per_day')}: ${data?.price_per_day}€`,
+                            `${_('remarks')}: ${data?.remarks?data?.remarks:''}`
+                        ]}
+                        renderItem={item => <List.Item>{item}</List.Item>}
+                        footer={<ImagePreview photos={data?.photos?data?.photos:[]} />}
+                        />
+
                 </>
                 }
 
@@ -56,4 +65,13 @@ const ShowCarModal = ({openModal,setOpenModal,title}) => {
     );
 };
 
+ShowCarModal.propTypes = {
+    openModal: PropTypes.shape({
+        id: PropTypes.number,
+        mode: PropTypes.number.isRequired,
+        open: PropTypes.bool.isRequired,
+    }),
+    setOpenModal: PropTypes.func.isRequired,
+    title: PropTypes.string
+}
 export default ShowCarModal;

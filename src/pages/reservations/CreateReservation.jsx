@@ -1,14 +1,14 @@
 import {Space, Button, DatePicker, Select, Spin} from 'antd';
 import { InfinityTable  as Table } from 'antd-table-infinity';
 import {FilterOutlined} from '@ant-design/icons';
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import CreateModal from "./components/createModal/CreateModal";
 import {useInfiniteQuery, useQueryClient} from "react-query";
-import {getAvailableVehicles} from "../../services/cars";
+import {getAvailableVehicles, getVehicleTypes} from "../../services/cars";
 import {concatData1, showMessage, _} from "../../functions/tools";
-import {CAR_TYPES, MESSAGE_TYPE} from "../../constants/config";
+import {MESSAGE_TYPE} from "../../constants/config";
 import moment from "moment";
 import {reservationScheme} from "../../constants/schemes";
 
@@ -37,6 +37,15 @@ const CreateReservation = () => {
     const[openModal,setOpenModal] = useState({});
     const[filter,setFilter] = useState({start_date:'',end_date:'',car_type:0});
     const[params,setParams] = useState({});
+
+    const [carTypeOptions,setCarTypeOptions] = useState([]);
+    useEffect(()=>{
+        getVehicleTypes().then(res=>{
+            let data = res?.data?.data;
+            setCarTypeOptions(data.map(e=>Object({value:e.id,label:e.name})));
+        });
+    },[]);
+
     const columns = [
         {
             title:  _("plate_no"),
@@ -84,8 +93,8 @@ const CreateReservation = () => {
         <Space style={{ marginTop: 10,display:'flex',justifyContent:'start' }}>
            <div>
               <span>{_('car_type')}: </span>
-            <Select placeholder={_('car_type_placeholder')} style={{width:150}} onChange={(e)=>setFilter({...filter,car_type:e})}>
-                {CAR_TYPES.map((option,index) => {
+            <Select loading={carTypeOptions.length === 0} placeholder={_('car_type_placeholder')} style={{width:150}} onChange={(e)=>setFilter({...filter,car_type:e})}>
+                {carTypeOptions?.map((option,index) => {
                     return  <Select.Option key={index} value={option.value}>{option.label}</Select.Option>
                 })}
             </Select>
@@ -101,7 +110,7 @@ const CreateReservation = () => {
                         setFilter({...filter,start_date:'',end_date:''});
                     }
                 }} />
-                <Button type={ JSON.stringify(filter) === JSON.stringify(params)?'':'primary'} onClick={()=>setParams({...filter})} style={{marginLeft:10}}  icon={<FilterOutlined />} >{_('search')}</Button>
+                <Button disabled={!filter.car_type || !filter.end_date || !filter.start_date} type={ JSON.stringify(filter) === JSON.stringify(params)?'':'primary'} onClick={()=>setParams({...filter})} style={{marginLeft:10}}  icon={<FilterOutlined />} >{_('search')}</Button>
             </div>
 
             <CreateModal

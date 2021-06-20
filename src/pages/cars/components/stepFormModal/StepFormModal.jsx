@@ -1,17 +1,21 @@
 import React, {useEffect, useState} from 'react';
-import { Modal, Button,Steps } from 'antd';
+import {Modal, Button, Steps, Spin} from 'antd';
 import {SaveOutlined,ArrowRightOutlined,ArrowLeftOutlined,CheckCircleTwoTone} from "@ant-design/icons";
 import CarForm from "../carForm/CarForm";
 import {FILE_URL, FORM_MODE, MESSAGE_TYPE} from "../../../../constants/config";
 import './style.css';
-import ImageUpload from "../imageUpload/ImageUpload";
+import ImageUpload from "../../../../components/imageUpload/ImageUpload";
 import {createVehicle, getVehicle, updateVehicle} from "../../../../services/cars";
 import {showMessage,_} from "../../../../functions/tools";
+import PropTypes from 'prop-types';
+import ShowCarModal from "../showCarModal/ShowCarModal";
 
 const { Step } = Steps;
 
 const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubmit,reset},queryClient}) => {
     const [isLoading,setIsLoading] = useState(false);
+    const [isFetching,setIsFetching] = useState(false);
+
     const [fileList, setFileList] = useState([]);
     const[formData,setFormData] = useState({});
 
@@ -49,6 +53,7 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
                     price_per_day:0,
                     remarks:''
                 });else{
+                    setIsFetching(true);
                     reset({})
                     getVehicle(openModal.id).then(res=>{
                         let data = res?.data;
@@ -62,9 +67,11 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
                             remarks:data.remarks
                         })
                        setFileList(data.photos.map(e=>{return {'uid': e.id,'status': 'done','url': FILE_URL+e?.photo }}))
+                        setIsFetching(false);
                     }).catch(err=>{
                         //console.log(err?.response?.statusText);
                         showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
+                        setIsFetching(false);
                     })
                 }
             }
@@ -143,6 +150,8 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
     return (
         <>
             <Modal title={title} visible={openModal.open &&(openModal.mode===FORM_MODE.EDIT || openModal.mode===FORM_MODE.CREATE)} onCancel={handleCancel} footer={footer} >
+                {isFetching?
+                    <Spin tip={_('loading')} />:<>
                 <Steps  type="navigation" current={current} style={{paddingTop:0}}>
                     {steps.map(item => (
                         <Step key={item.title} title={item.title} description={item.description} />
@@ -173,10 +182,22 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
                         </Button>
                     )}
                 </div>
-
+                    </>}
             </Modal>
         </>
     );
 };
+
+ShowCarModal.propTypes = {
+    openModal: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        mode: PropTypes.number.isRequired,
+        open: PropTypes.bool.isRequired,
+    }),
+    setOpenModal: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    form: PropTypes.object,
+    queryClient: PropTypes.object
+}
 
 export default StepFormModal;

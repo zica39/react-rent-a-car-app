@@ -7,6 +7,7 @@ import {concatData1, getReservationStatus, showMessage, _} from "../../../functi
 import {FILE_URL, MESSAGE_TYPE, RESERVATION_STATUS, STATUS_COLOR} from "../../../constants/config";
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import ImagePreview from "../../../components/imagePreview/ImagePreview";
+import image from './no_image.png';
 
 const Home = () => {
 
@@ -30,7 +31,7 @@ const Home = () => {
             return false
         },
     });
-    if(isError)  showMessage(error?.response?.data?.message, MESSAGE_TYPE.ERROR);;
+    if(isError)  showMessage(error?.response?.data?.message, MESSAGE_TYPE.ERROR);
 
     console.log(concatData1(data));
     useBottomScrollListener(()=>{
@@ -67,17 +68,33 @@ const Home = () => {
                     loading={isLoading}
                     key={index}
                     hoverable={true}
-                    title={<><img alt="" style={{marginRight:3}} height="70" src={FILE_URL + val?.vehicle?.photos[0]?.photo}/>{val?.vehicle?.plate_no}</>}
+                    title={<><img
+                        alt=""
+                        style={{marginRight:3}}
+                        height="70"
+                        src={FILE_URL + val?.vehicle?.photos[0]?.photo}
+                        onError={(e)=>{e.target.onerror = null; e.target.src=image}}
+                    />
+                        {val?.vehicle?.plate_no}
+                    </>}
 
                     extra={<ClockCircleOutlined style={{color:STATUS_COLOR[getReservationStatus(val?.from_date,val?.to_date,Date.now())]}}/>}
-                    style={{ width: '33%',margin:1 }}
+                    style={{ width: '300px',margin:1 }}
                     onClick={()=>{openModal(val)}}
                 >
-
-                    <p style={{fontSize:12}}>Od: {val?.from_date} / {val?.rent_location?.name}</p>
-                    <p style={{fontSize:12}}>Do: {val?.to_date} /  {val?.return_location?.name}</p>
-                        <p>Ukupna cijena: <b>{val?.total_price}</b>€</p>
-
+                        <List
+                            size="small"
+                            style={{lineHeight:'1!important'}}
+                            bordered
+                            dataSource={[
+                                `${_('from_date')}: ${val?.from_date}`,
+                                `${_('to_date')}: ${val?.to_date}`,
+                                `${_('rent_location')}: ${val?.rent_location?.name}`,
+                                `${_('return_location')}: ${val?.return_location?.name}`,
+                                `${_('reservation_total_price')}: ${val?.total_price}€`
+                            ]}
+                            renderItem={item => <List.Item>{item}</List.Item>}
+                        />
                 </Card>
             )))}
             </Skeleton>
@@ -94,8 +111,8 @@ const Home = () => {
                         dataSource={[
                             `${_('from_date')}: ${showData?.from_date}`,
                             `${_('to_date')}: ${showData?.to_date}`,
-                            `${_('rent_location')}: ${showData?.from_date}`,
-                            `${_('return_location')}: ${showData?.from_date}`,
+                            `${_('rent_location')}: ${showData?.rent_location?.name}`,
+                            `${_('return_location')}: ${showData?.return_location?.name}`,
                             `${_('reservation_total_price')}: ${showData?.total_price}€`
                         ]}
                         renderItem={item => <List.Item>{item}</List.Item>}
@@ -122,7 +139,7 @@ const Home = () => {
                             <List
                                 size="small"
                                 bordered
-                                dataSource={showData?.equipment?.length && showData?.equipment.map(e=>`${e?.name}: ${e?.pivot?.quantity}`)}
+                                dataSource={showData?.equipment?.length?showData?.equipment.map(e=>`${e?.name}: ${e?.pivot?.quantity}`):[]}
                                 renderItem={item => <List.Item>{item}</List.Item>}
                             />
                         </Collapse.Panel>

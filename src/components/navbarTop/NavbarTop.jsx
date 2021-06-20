@@ -8,7 +8,7 @@ import Logo from "../logo/Logo";
 import UserInfo from "../userInfo/UserInfo";
 import AddItemDropdown from "../addItemDropdown/AddItemDropdown";
 import ChangePassword from "../changePassword/ChangePassword";
-import LogOut from "../logOut/LogOut";
+import LogOut from "../logout/Logout";
 const {Header} = Layout;
 
 const NavbarTop = () => {

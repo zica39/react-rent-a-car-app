@@ -22,7 +22,7 @@ export const changePasswordSchema = () => {
         old_password: password_rules,
         new_password:password_rules,
         confirm_password: yup.string()
-            .oneOf([yup.ref('new_password'), null], _('passwords_mismatch'))
+            .oneOf([yup.ref('new_password'), null], _('passwords_mismatch')).required(_('required'))
 
     });
 }

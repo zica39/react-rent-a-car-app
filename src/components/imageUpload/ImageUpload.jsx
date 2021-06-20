@@ -1,5 +1,6 @@
 import React from 'react';
 import { Upload } from 'antd';
+import PropTypes from 'prop-types';
 
 const ImageUpload = ({fileList,setFileList}) => {
 
@@ -38,5 +39,8 @@ const ImageUpload = ({fileList,setFileList}) => {
             </Upload>
     );
 };
-
+ImageUpload.propTypes = {
+    fileList: PropTypes.array.isRequired,
+    setFileList: PropTypes.func.isRequired
+}
 export default ImageUpload;

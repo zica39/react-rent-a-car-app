@@ -1,5 +1,6 @@
 import { Image } from 'antd';
 import {FILE_URL} from "../../constants/config";
+import PropTypes from 'prop-types';
 
 function ImagePreview({photos}) {
     return (
@@ -14,5 +15,8 @@ function ImagePreview({photos}) {
 
         </Image.PreviewGroup>
     );
+}
+ImagePreview.propTypes = {
+    photos: PropTypes.array.isRequired
 }
 export default ImagePreview;

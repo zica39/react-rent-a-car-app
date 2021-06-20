@@ -6,7 +6,7 @@ import {logout} from "../../services/auth";
 import {MESSAGE_TYPE} from "../../constants/config";
 import {useState} from "react";
 
-const LogOut = () => {
+const Logout = () => {
     const[isLoading,setIsLoading] = useState(false);
     const history = useHistory();
     const onLogOut = ()=>{
@@ -15,8 +15,8 @@ const LogOut = () => {
             removeAuth();
             history.push('/login');
             setIsLoading(false);
-        }).catch(()=>{
-            showMessage('Problem sa internet konekcijom',MESSAGE_TYPE.WARNING);
+        }).catch((err)=>{
+            showMessage(err?.response?.data?.message, MESSAGE_TYPE.ERROR);
             removeAuth();
             history.push('/login');
             setIsLoading(false);
@@ -33,4 +33,4 @@ const LogOut = () => {
     </Button>
 }
 
-export default LogOut;
+export default Logout;

@@ -4,6 +4,7 @@ import {InfoCircleOutlined} from "@ant-design/icons";
 import React from "react";
 import {INPUT_TYPE} from "../../constants/config";
 import {AsyncPaginate} from "react-select-async-paginate";
+import PropTypes from 'prop-types';
 
 const FormInput = ({data:{name,type,
     label,required,icon,tooltip,defaultValue,
@@ -113,4 +114,23 @@ const FormInput = ({data:{name,type,
     </Form.Item>
 }
 
+FormInput.propTypes  = {
+    data: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        type: PropTypes.number.isRequired,
+        label: PropTypes.string,
+        required: PropTypes.bool,
+        icon: PropTypes.element,
+        tooltip: PropTypes.string,
+        defaultValue: PropTypes.any,
+        input_params: PropTypes.object,
+        helper_params: PropTypes.object,
+        options: PropTypes.array
+    }),
+    errors: PropTypes.object.isRequired,
+    control: PropTypes.object.isRequired,
+    setValue: PropTypes.func
+}
+
 export default FormInput;
+
