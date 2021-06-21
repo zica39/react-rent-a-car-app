@@ -2,7 +2,7 @@ import axiosInstance from "./axios";
 import {getToken} from "../functions/tools";
 
 export async function getReservations (queryKey) {
-    console.log(queryKey)
+    //console.log(queryKey)
     const page = queryKey?.pageParam || 1;
     const search = queryKey?.queryKey[1];
     const res = await axiosInstance.get('/reservations',{

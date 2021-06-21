@@ -5,7 +5,14 @@ import {getReservation} from "../../../../services/reservations";
 import {FORM_MODE, MESSAGE_TYPE} from "../../../../constants/config";
 import moment from 'moment';
 import {updateReservation} from "../../../../services/reservations";
-import {getEquipmentData, getEquipmentObj, setEquipmentData, showMessage, _} from "../../../../functions/tools";
+import {
+    getEquipmentData,
+    getEquipmentObj,
+    setEquipmentData,
+    showMessage,
+    _,
+    getEquipmentPrice
+} from "../../../../functions/tools";
 import DataView from "../dataView/DataView";
 import ReservationForm from "../reservationForm/ReservationForm";
 import PropTypes from "prop-types";
@@ -65,7 +72,7 @@ const EditModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubm
                         from_date: moment(data.from_date),
                         rent_location_id:data.rent_location_id,
                         return_location_id:data.return_location_id,
-                        total_price:data.total_price,
+                        total_price:data.total_price + (getEquipmentPrice(getValues())),
                         ...getEquipmentObj(data)
                     });
                     setIsFetching(false);
@@ -87,7 +94,7 @@ const EditModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubm
             }
 
         }
-    },[openModal,reset])
+    },[openModal,reset,getValues])
 
     const footer = (openModal.mode===FORM_MODE.EDIT || openModal.mode===FORM_MODE.CREATE)? [
         <Button disabled={isLoading} className="login-form-button" key='cancel' onClick={handleCancel}>

@@ -26,7 +26,7 @@ const CreateModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
                 to_date:moment(params.end_date)
             });
         }
-    },[openModal]);
+    },[openModal,reset,params]);
 
     const onFinish = (data) => {
         let formData = getEquipmentData(data) ;

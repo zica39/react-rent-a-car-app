@@ -212,7 +212,7 @@ export const getEquipmentPrice = (data) => {
     let price = 0;
         for(let i in data){
             if(i?.startsWith('_')){
-                price += data[i]*5;
+                price += (data[i] || 0)*5;
             }
         }
         return price;

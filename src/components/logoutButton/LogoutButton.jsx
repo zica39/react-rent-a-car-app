@@ -6,7 +6,7 @@ import {logout} from "../../services/auth";
 import {MESSAGE_TYPE} from "../../constants/config";
 import {useState} from "react";
 
-const Logout = () => {
+const LogoutButton = () => {
     const[isLoading,setIsLoading] = useState(false);
     const history = useHistory();
     const onLogOut = ()=>{
@@ -33,4 +33,4 @@ const Logout = () => {
     </Button>
 }
 
-export default Logout;
+export default LogoutButton;

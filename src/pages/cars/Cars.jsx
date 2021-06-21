@@ -14,7 +14,6 @@ import {vehicleScheme} from "../../constants/schemes";
 
 const Cars = () => {
 
-    const NEW_CAR = {open:true,title:_('create_new_vehicle'),mode:FORM_MODE.CREATE,id:0};
     const {formState: { errors }, handleSubmit, control,reset} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onChange',
@@ -126,12 +125,12 @@ const Cars = () => {
     })
 
     useEffect(()=>{
-        if(pullData('open_modal'))setOpenModal(NEW_CAR);
+        if(pullData('open_modal'))setOpenModal( {open:true,title:_('create_new_vehicle'),mode:FORM_MODE.CREATE,id:0});
     },[]);
 
     return ( <>
         <Space>
-            <Button icon={<PlusSquareOutlined />} onClick={()=>{setOpenModal(NEW_CAR);}}>{_('add_vehicle_btn')}</Button>
+            <Button icon={<PlusSquareOutlined />} onClick={()=>{setOpenModal( {open:true,title:_('create_new_vehicle'),mode:FORM_MODE.CREATE,id:0});}}>{_('add_vehicle_btn')}</Button>
             <Input.Search placeholder={_('search_vehicles')} allowClear onSearch={(e)=>setSearch(e)}/>
 
             <StepFormModal

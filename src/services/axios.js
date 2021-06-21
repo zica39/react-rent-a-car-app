@@ -33,15 +33,10 @@ axiosInstance.interceptors.response.use(
 
                 if (tokenParts.exp > now) {
                     return axiosInstance
-                        .post('/auth/refresh', {refresh: refreshToken})
+                        .post('/auth/refresh', {})
                         .then((response) => {
 
-                            /*localStorage.setItem('access_token', response.data.access);
-                            localStorage.setItem('refresh_token', response.data.refresh);*/
                             refreshToken(response?.data?.access_token);
-
-                            axiosInstance.defaults.headers['Authorization'] = "JWT " + response.data.access;
-                            originalRequest.headers['Authorization'] = "JWT " + response.data.access;
 
                             return axiosInstance(originalRequest);
                         })
