@@ -8,7 +8,7 @@ export default {
 
 const Template = (args) =>  <div><ImagePreview {...args} /></div>
 
-export const Primary = Template.bind({});
-Primary.args = {
+export const Default = Template.bind({});
+Default.args = {
     photos:[]
 };

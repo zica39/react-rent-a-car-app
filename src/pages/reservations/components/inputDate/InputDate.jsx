@@ -1,5 +1,5 @@
 import {INPUT_TYPE} from "../../../../constants/config";
-import {_} from "../../../../functions/tools";
+import {_, getEquipmentPrice} from "../../../../functions/tools";
 import FormInput from "../../../../components/formInput/FormInput";
 import React from "react";
 import PropTypes from "prop-types";
@@ -17,13 +17,14 @@ const InputDate = ({isFrom,control,errors,setValue,getValues,pricePerDay}) => {
             placeholder:_("from_date_placeholder"),
             allowClear:true,
             onChange:(e) => {
+                let equipment_price = (getEquipmentPrice(getValues()));
                 let to_date = getValues('to_date');
                 let price_per_day = pricePerDay || getValues('price_per_day');
                 let from_date = e;
                 if(from_date && to_date){
                     let days =  to_date.diff(from_date, 'days')   // =1
 
-                    if(days>0)setValue('total_price',days*price_per_day)
+                    if(days>0)setValue('total_price',days*price_per_day + equipment_price)
                     else setValue('total_price',0);
                 }else{
                     setValue('total_price',0);
@@ -43,13 +44,14 @@ const InputDate = ({isFrom,control,errors,setValue,getValues,pricePerDay}) => {
             placeholder:_("to_date_placeholder"),
             allowClear:true,
             onChange:(e) => {
+                let equipment_price = (getEquipmentPrice(getValues()));
                 let from_date = getValues('from_date');
                 let price_per_day = pricePerDay || getValues('price_per_day');
                 let to_date = e;
                 if(from_date && to_date){
                     let days =  to_date.diff(from_date, 'days')   // =1
 
-                    if(days>0)setValue('total_price',days*price_per_day)
+                    if(days>0)setValue('total_price',days*price_per_day + equipment_price)
                     else setValue('total_price',0);
                 }else{
                     setValue('total_price',0);

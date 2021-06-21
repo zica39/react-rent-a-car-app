@@ -1,11 +1,11 @@
 import {Col, Collapse, Input, Row} from "antd";
-import {_} from "../../../../functions/tools";
+import {_, getEquipmentPrice} from "../../../../functions/tools";
 import FormInput from "../../../../components/formInput/FormInput";
 import {INPUT_TYPE} from "../../../../constants/config";
 import React from "react";
 import PropTypes from "prop-types";
 
-const EquipmentGroup = ({equipment,errors,control}) => {
+const EquipmentGroup = ({equipment,errors,control,getValues,setValue}) => {
 
     return <Collapse defaultActiveKey={['1']} >
         <Collapse.Panel header={_('equipment')} key="1">
@@ -18,6 +18,15 @@ const EquipmentGroup = ({equipment,errors,control}) => {
                             name: '_'+e.id,
                             label:e.name,
                             input_params:{
+                                onChange:(r) => {
+                                    console.log(getValues())
+                                    let old_price = (getEquipmentPrice(getValues()));
+                                    setValue('_'+e.id, r);
+                                    let new_price = (getEquipmentPrice(getValues()));
+                                    console.log( new_price - old_price)
+                                    let total_price = getValues('total_price');
+                                    setValue('total_price', total_price + (new_price - old_price)*(total_price !== 0));
+                                },
                                 max:e.max_quantity,
                                 step:1,
                                 min:0,

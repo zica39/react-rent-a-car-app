@@ -9,4 +9,4 @@ export default {
 
 const Template = (args) =>  <BrowserRouter><div style={{backgroundColor:'black',width:'120px'}}><Logout {...args} /></div></BrowserRouter>;
 
-export const Primary = Template.bind({});
+export const Default = Template.bind({});

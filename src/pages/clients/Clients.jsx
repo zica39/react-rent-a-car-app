@@ -13,7 +13,6 @@ import {clientScheme} from "../../constants/schemes";
 
 const Clients = () => {
 
-    const NEW_CLIENT = {open:true,title:_('create_new_client'),mode:FORM_MODE.CREATE,id:0};
     const[openModal,setOpenModal] = useState({});
     const[search,setSearch] = useState('');
     const columns = [
@@ -43,10 +42,10 @@ const Clients = () => {
             dataIndex: 'date_of_last_reservation',
             render:(text) =>text || '-'
         },
-        /*{
+        {
             title: _('remarks'),
             dataIndex: 'remarks',
-        },*/
+        },
         {
             title:  _('action'),
             key: 'action',
@@ -87,8 +86,7 @@ const Clients = () => {
             return false
         },
     });
-    if(isError) showMessage(error, MESSAGE_TYPE.ERROR);
-   // console.log((data))
+    if(isError) showMessage(error?.response?.data?.message, MESSAGE_TYPE.ERROR);
 
     const handleFetch = () => {
         if(hasNextPage)fetchNextPage().then();
@@ -127,13 +125,13 @@ const Clients = () => {
     }
 
     useEffect(()=>{
-        if(pullData('open_modal'))setOpenModal(NEW_CLIENT);
+        if(pullData('open_modal'))setOpenModal({open:true,title:_('create_new_client'),mode:FORM_MODE.CREATE,id:0});
     },[]);
 
     return ( <>
-        <Space style={{ marginTop: 10, marginBottom:5,display:'flex',justifyContent:'space-between' }}>
-            <Button icon={<UserAddOutlined />} onClick={()=>setOpenModal(NEW_CLIENT)}>{_('add_client_btn')}</Button>
-            <Input.Search placeholder={_('search_clients')} allowClear onSearch={(e)=>{ setSearch(e); }} style={{ width: 200 }} />
+        <Space>
+            <Button icon={<UserAddOutlined />} onClick={()=>setOpenModal({open:true,title:_('create_new_client'),mode:FORM_MODE.CREATE,id:0})}>{_('add_client_btn')}</Button>
+            <Input.Search placeholder={_('search_clients')} allowClear onSearch={(e)=>{ setSearch(e); }} />
             <ClientModal
                 openModal={openModal}
                 setOpenModal={setOpenModal}

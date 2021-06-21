@@ -6,7 +6,7 @@ import {FILE_URL, FORM_MODE, MESSAGE_TYPE} from "../../../../constants/config";
 import './style.css';
 import ImageUpload from "../../../../components/imageUpload/ImageUpload";
 import {createVehicle, getVehicle, updateVehicle} from "../../../../services/cars";
-import {showMessage,_} from "../../../../functions/tools";
+import {showMessage, _, getImage} from "../../../../functions/tools";
 import PropTypes from 'prop-types';
 import ShowCarModal from "../showCarModal/ShowCarModal";
 
@@ -66,7 +66,7 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
                             price_per_day:data.price_per_day,
                             remarks:data.remarks
                         })
-                       setFileList(data.photos.map(e=>{return {'uid': e.id,'status': 'done','url': FILE_URL+e?.photo }}))
+                       setFileList(data.photos.map(e=>{return getImage({'uid': e.id,'status': 'done','url': FILE_URL+e?.photo })}))
                         setIsFetching(false);
                     }).catch(err=>{
                         //console.log(err?.response?.statusText);
@@ -190,12 +190,12 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
 
 ShowCarModal.propTypes = {
     openModal: PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        mode: PropTypes.number.isRequired,
-        open: PropTypes.bool.isRequired,
+        id: PropTypes.number,
+        mode: PropTypes.number,
+        open: PropTypes.bool,
     }),
     setOpenModal: PropTypes.func.isRequired,
-    title: PropTypes.string.isRequired,
+    title: PropTypes.string,
     form: PropTypes.object,
     queryClient: PropTypes.object
 }

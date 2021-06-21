@@ -9,4 +9,4 @@ export default {
 
 const Template = (args) =>  <BrowserRouter><BreadcrumbNav {...args} /></BrowserRouter>;
 
-export const Primary = Template.bind({});
+export const Default = Template.bind({});

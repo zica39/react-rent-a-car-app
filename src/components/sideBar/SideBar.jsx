@@ -27,7 +27,7 @@ const SideBar = () => {
         <Menu
             mode="inline"
             defaultSelectedKeys={[PAGE_INDEX[location.pathname]]}
-            style={{ height: '100%', borderRight: 0 }}
+            style={{ height: window.innerHeight, borderRight: 0 }}
             theme="dark"
         >
             <Menu.Item key="1" onClick={()=>switchToPage('/clients')} icon={<UserOutlined />} >{_('clients')}</Menu.Item>

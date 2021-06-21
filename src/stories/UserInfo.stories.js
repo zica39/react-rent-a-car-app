@@ -10,4 +10,4 @@ export default {
 
 const Template = (args) => <span style={{backgroundColor:'black'}}><UserInfo {...args} /></span>;
 
-export const Primary = Template.bind({});
+export const Default = Template.bind({});

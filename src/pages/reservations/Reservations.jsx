@@ -106,7 +106,7 @@ const Reservations = () => {
             return false
         },
     });
-    if(isError) showMessage(error, MESSAGE_TYPE.ERROR);
+    if(isError) showMessage(error?.response?.data?.message, MESSAGE_TYPE.ERROR);
 
     const handleFetch = () => {
         if(hasNextPage)fetchNextPage().then();
@@ -123,7 +123,7 @@ const Reservations = () => {
     })
 
     return ( <>
-        <Space style={{ marginTop: 10,display:'flex',justifyContent:'space-between' }}>
+        <Space>
             <Button icon={<PlusSquareOutlined />} onClick={()=>history.push('/reservations/create')} > {_('add_reservation_btn')}</Button>
             <div>
                 <DatePicker.RangePicker onChange={(e)=>{

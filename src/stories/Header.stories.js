@@ -9,5 +9,5 @@ export default {
 
 const Template = (args) => <BrowserRouter><NavbarTop {...args} /></BrowserRouter>;
 
-export const navBar = Template.bind({});
+export const Default = Template.bind({});
 

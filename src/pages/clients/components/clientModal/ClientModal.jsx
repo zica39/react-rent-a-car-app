@@ -26,7 +26,7 @@ const ClientModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
                     country_id: data?.country_id,
                     identification_document_no: data?.identification_document_no,
                     phone_no: data?.phone_no,
-                   /* remarks: data?.remarks*/
+                    remarks: data?.remarks
                 });
                  setIsFetching(false);
             }).catch(err=>{
@@ -86,7 +86,7 @@ const ClientModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
         <>
             <Modal title={title} visible={openModal.open} onCancel={handleCancel} footer={footer}>
                 {isFetching?
-                    <Spin style={{marginLeft:'auto'}} tip={_('loading')} />:
+                    <Spin tip={_('loading')} />:
                     <EditShowForm disabled={openModal.mode===FORM_MODE.SHOW} control={control} errors={errors} handleSubmit={handleSubmit} onFinish={onFinish} />
                 }
             </Modal>

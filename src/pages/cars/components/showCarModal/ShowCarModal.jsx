@@ -68,8 +68,8 @@ const ShowCarModal = ({openModal,setOpenModal,title}) => {
 ShowCarModal.propTypes = {
     openModal: PropTypes.shape({
         id: PropTypes.number,
-        mode: PropTypes.number.isRequired,
-        open: PropTypes.bool.isRequired,
+        mode: PropTypes.number,
+        open: PropTypes.bool,
     }),
     setOpenModal: PropTypes.func.isRequired,
     title: PropTypes.string

@@ -108,7 +108,7 @@ const Cars = () => {
             return false
         },
     });
-    if(isError) showMessage(error, MESSAGE_TYPE.ERROR);
+    if(isError) showMessage(error?.response?.data?.message, MESSAGE_TYPE.ERROR);
     // console.log((data))
 
     const handleFetch = () => {
@@ -130,9 +130,9 @@ const Cars = () => {
     },[]);
 
     return ( <>
-        <Space style={{ marginTop: 10,display:'flex',justifyContent:'space-between' }}>
+        <Space>
             <Button icon={<PlusSquareOutlined />} onClick={()=>{setOpenModal(NEW_CAR);}}>{_('add_vehicle_btn')}</Button>
-            <Input.Search placeholder={_('search_vehicles')} allowClear onSearch={(e)=>setSearch(e)} style={{ width: 200 }} />
+            <Input.Search placeholder={_('search_vehicles')} allowClear onSearch={(e)=>setSearch(e)}/>
 
             <StepFormModal
                 openModal={openModal}

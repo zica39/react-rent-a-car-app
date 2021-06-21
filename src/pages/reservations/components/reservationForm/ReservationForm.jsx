@@ -8,11 +8,16 @@ import EquipmentGroup from "../equipmentGroup/EquipmentGroup";
 import InputDate from "../inputDate/InputDate";
 import {getClientsOptions} from "../../../../services/clients";
 import PropTypes from "prop-types";
+import {AsyncPaginate} from "react-select-async-paginate";
+import {Controller} from "react-hook-form";
 
-const ReservationForm = ({onFinish,handleSubmit,errors,control,getValues,setValue,isCreate,pricePerDay}) => {
+const ReservationForm = ({onFinish,handleSubmit,errors,control,getValues,setValue,isCreate,pricePerDay,openModal}) => {
 
     const [equipment,setEquipment] = useState([]);
     const [locationOptions,setLocationOptions] = useState([]);
+    const [select,setSelect] = useState('');
+
+    useEffect(()=>setSelect(''),[openModal]);
 
     useEffect(()=>{
         getLocations().then(res=>{
@@ -30,22 +35,37 @@ const ReservationForm = ({onFinish,handleSubmit,errors,control,getValues,setValu
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 17 }}
         layout="horizontal"
-        initialValues={{ }}
         onFinish={handleSubmit(onFinish)}
         size="default"
     >
         {isCreate?
-            <FormInput data={{
-                type:INPUT_TYPE.SELECT_ASYNC,
-                name:'client_id',
-                label:_('client'),
-                required:true,
-                helper_params:{
-                    placeholder:_('select_client'),
-                    loadOptions:getClientsOptions,
-                    defaultValue:''
-                }
-            }} errors={errors} control={control} setValue={setValue}/>:
+            <Form.Item
+                validateStatus={errors && errors['client_id'] ? 'error' : ''}
+                help={errors['client_id']?.message}
+                label={_('client')}
+                htmlFor={'client_id'}
+                required={true}
+            >
+                <Controller
+                    name={'client_id'}
+                    control={control}
+                    render={() => {
+                        return <AsyncPaginate
+                            placeholder={_('select_client')}
+                            value={select}
+                            loadOptions={getClientsOptions}
+                            additional={{
+                                page: 1,
+                            }}
+                            onChange={(e)=>{
+                                setSelect(e)
+                                setValue('client_id',e.value,{shouldValidate:true,shouldDirty:true,shouldTouch:true});
+                            }}
+
+                        />
+                    }}
+                />
+            </Form.Item>:
             <FormInput data={{
                 type: INPUT_TYPE.TEXT,
                 name:'client',
@@ -93,7 +113,7 @@ const ReservationForm = ({onFinish,handleSubmit,errors,control,getValues,setValu
             options:locationOptions
         }} errors={errors} control={control}/>
 
-        <EquipmentGroup equipment={equipment} errors={errors} control={control} />
+        <EquipmentGroup equipment={equipment} errors={errors} control={control} setValue={setValue} getValues={getValues} />
 
         <FormInput data={{
             type: INPUT_TYPE.NUMBER,

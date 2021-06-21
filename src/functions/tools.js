@@ -37,6 +37,17 @@ export const saveAuth = (user, rememberMe) => {
     }
 }
 
+export const isRememberUser = () => {
+    return sessionStorage.getItem('auth');
+}
+export const refreshToken = (token) => {
+    let new_auth = auth();
+    new_auth.token = token;
+    let isRemember = isRememberUser();
+    saveAuth(new_auth, isRemember);
+
+}
+
 export const removeAuth = () => {
     localStorage.removeItem('auth');
     sessionStorage.removeItem('auth');
@@ -197,10 +208,20 @@ export const getEquipmentObj= (data) => {
     return newData;
 }
 
+export const getEquipmentPrice = (data) => {
+    let price = 0;
+        for(let i in data){
+            if(i?.startsWith('_')){
+                price += data[i]*5;
+            }
+        }
+        return price;
+    }
+
 export const setEquipmentData = (data) => {
     let newData ={...data};
     data?.equipment?.forEach(e=>{
-        newData['_'+e.id] = e?.pivot?.quantity;
+        newData['_'+e.id] = e?.pivot?.quantity || 0;
     })
     delete newData.equipment;
 
@@ -216,4 +237,23 @@ export const calcDays = (from_date,to_date,price_per_day) => {
         }else{
             return 0;
         }
+}
+
+export async function createFile(obj){
+    let response = await fetch(obj.url,{mode: 'no-cors'});
+    let data = await response.blob();
+    let metadata = {
+        type: response.headers.get('content-type') || 'image/png',
+    };
+    //console.log(data)
+
+    return  new File([data], Math.random() + '.png', metadata);
+}
+
+export function getImage(obj){
+    let res = createFile(obj);
+    res.then(file=>{
+        obj.originFileObj = file
+    });
+    return obj;
 }

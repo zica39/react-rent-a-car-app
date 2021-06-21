@@ -21,8 +21,8 @@ const Template = (args) => {
    return <FormInput {...args} control={control} errors={errors}/>;
 }
 
-export const Primary = Template.bind({});
-Primary.args = {
+export const Default = Template.bind({});
+Default.args = {
     data:{
         'name': 'input_field',
         'type': INPUT_TYPE.TEXT

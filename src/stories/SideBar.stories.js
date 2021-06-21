@@ -9,4 +9,4 @@ export default {
 
 const Template = (args) =>  <BrowserRouter><SideBar {...args} /></BrowserRouter>;
 
-export const Primary = Template.bind({});
+export const Default = Template.bind({});

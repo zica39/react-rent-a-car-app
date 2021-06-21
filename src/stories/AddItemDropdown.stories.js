@@ -10,4 +10,4 @@ export default {
 
 const Template = (args) =>  <BrowserRouter><AddItemDropdown {...args} /></BrowserRouter>;
 
-export const Primary = Template.bind({});
+export const Default = Template.bind({});

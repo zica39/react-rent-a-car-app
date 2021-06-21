@@ -21,6 +21,7 @@ const CreateReservation = () => {
         defaultValues:{
             date_from:'',
             date_to:'',
+            client_id:'',
             total_price:0
         }
     });
@@ -83,7 +84,7 @@ const CreateReservation = () => {
         },
     enabled:Boolean(params.car_type)
     });
-    if(isError) showMessage(error, MESSAGE_TYPE.ERROR);
+    if(isError) showMessage(error?.response?.data?.message, MESSAGE_TYPE.ERROR);
 
     const handleFetch = () => {
         if(hasNextPage)fetchNextPage().then();

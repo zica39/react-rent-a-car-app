@@ -72,6 +72,7 @@ const CreateModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
                     onFinish={onFinish}
                     pricePerDay={openModal?.data?.price_per_day}
                     isCreate={true}
+                    openModal={openModal}
                 />
             </Modal>
         </>
