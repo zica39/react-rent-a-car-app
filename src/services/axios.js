@@ -1,6 +1,6 @@
 import axios from 'axios';
-import {BASE_URL} from "../constants/config";
-import {auth} from "../functions/tools";
+import {BASE_URL, MESSAGE_TYPE} from "../constants/config";
+import {auth, showMessage} from "../functions/tools";
 
 const axiosInstance = axios.create({
     baseURL:BASE_URL
@@ -19,10 +19,12 @@ axiosInstance.interceptors.response.use(
 
         if (
             error.response.status === 401 &&
-            error.response.statusText === "Unauthorized")
+            error.response.statusText === "Unauthorized" &&
+            auth()
+        )
         {
             const refreshToken = auth().token;
-            console.log(refreshToken)
+            //console.log(refreshToken)
 
             if (refreshToken){
                 const tokenParts = JSON.parse(atob(refreshToken.split('.')[1]));
@@ -41,14 +43,17 @@ axiosInstance.interceptors.response.use(
                             return axiosInstance(originalRequest);
                         })
                         .catch(err => {
-                            console.log(err)
+                           // console.log(err)
+                            showMessage(err?.response?.data?.message,MESSAGE_TYPE.ERROR);
                         });
                 }else{
-                    console.log("Refresh token is expired", tokenParts.exp, now);
+                    showMessage("Refresh token is expired",MESSAGE_TYPE.WARNING);
+                    //console.log("Refresh token is expired", tokenParts.exp, now);
                     window.location.href = '/login';
                 }
             }else{
-                console.log("Refresh token not available.")
+                showMessage("Refresh token not available.",MESSAGE_TYPE.WARNING);
+                //console.log("Refresh token not available.")
                 window.location.href = '/login';
             }
         }

@@ -156,7 +156,7 @@ const Reservations = () => {
             className='hover-row'
             bordered={true}
             pagination={false}
-            scroll={{ y: window.innerHeight-250 }} />
+            scroll={{ y: 'calc(100vh - 250px)' }} />
         {(isFetching && !isFetchingNextPage)&&<Spin tip={_('loading')} />}
     </>)
 

@@ -150,7 +150,7 @@ const Clients = () => {
             className='hover-row'
             bordered={true}
             pagination={false}
-            scroll={{ y: window.innerHeight-300 }} />
+            scroll={{ y: 'calc(100vh - 250px)' }} />
         {(isFetching && !isFetchingNextPage)&&<Spin tip={_('loading')} />}
     </>)
 
