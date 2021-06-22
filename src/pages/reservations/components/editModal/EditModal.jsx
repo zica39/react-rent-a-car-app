@@ -10,8 +10,7 @@ import {
     getEquipmentObj,
     setEquipmentData,
     showMessage,
-    _,
-    getEquipmentPrice
+    _
 } from "../../../../functions/tools";
 import DataView from "../dataView/DataView";
 import ReservationForm from "../reservationForm/ReservationForm";
@@ -72,7 +71,7 @@ const EditModal = ({openModal,setOpenModal,title,form:{control,errors,handleSubm
                         from_date: moment(data.from_date),
                         rent_location_id:data.rent_location_id,
                         return_location_id:data.return_location_id,
-                        total_price:data.total_price /*+ (getEquipmentPrice(getValues()))*/,
+                        total_price:data.total_price,
                         ...getEquipmentObj(data)
                     });
                     setIsFetching(false);
