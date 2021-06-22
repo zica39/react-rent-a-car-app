@@ -1,3 +1,6 @@
+export const BASE_URL = 'http://akademija-api.proserver.me/api/';//'http://localhost:8000/api/';
+export const FILE_URL = 'http://akademija-api.proserver.me';//'http://localhost:8000/';
+
 export const ROLES = {
     CLIENT:'Client',
     EMPLOYEE:'Employee',
@@ -62,5 +65,3 @@ export const CAR_TYPES = [
 ];
 
 export const CAR_MIN_YEAR = 1990;
-export const BASE_URL = 'http://localhost:8000/api/';
-export const FILE_URL = 'http://localhost:8000/';

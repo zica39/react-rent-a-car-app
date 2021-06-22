@@ -13,7 +13,14 @@ const ClientModal = ({openModal,setOpenModal,title,form:{control,errors,handleSu
 
     useEffect(()=>{
          if(openModal.open && openModal.mode === FORM_MODE.CREATE){
-            reset({});
+            reset({
+                email: '',
+                name:'',
+                country_id:null,
+                identification_document_no:'',
+                phone_no:'',
+                remarks:''
+            });
         }else if(openModal.open && (openModal.mode === FORM_MODE.EDIT || openModal.mode === FORM_MODE.SHOW) && openModal.id){
             console.log(openModal.id);
             setIsFetching(true);

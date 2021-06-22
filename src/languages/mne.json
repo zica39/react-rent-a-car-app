@@ -107,7 +107,7 @@
   "edit_reservation": "Uredi rezervcaciju",
   "delete_reservation": "Obrisi rezervaciju",
   "reservation_delete_success": "Rezervacije je uspjesno obrisana!",
-  "reservation_edit_success": "Rezervacija je uspjeno obrisana!",
+  "reservation_edit_success": "Rezervacija je uspjeno izmjenjena!",
   "reservation_create_success": "Rezervacija je uspjesno kreirana!",
   "reservation_info": "Informacije o rezervaciji",
   "create_new_reservation": "Kreiraj novu rezervaciju",

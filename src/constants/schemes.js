@@ -33,10 +33,10 @@ export const clientScheme = () => {
     return yup.object().shape({
         email: yup.string().email(_('email_valid')).required(_('required')),
         name:yup.string().min(3,_('client_name_min')).max(255,_('client_name_max')),
-        country_id:yup.number().integer().required(_('required')),
+        country_id:yup.number().integer().typeError(_('required')).required(_('required')),
         identification_document_no:yup.string().min(9, _('passport_len')).max(9,_('passport_len')).matches(passportRegExp,  _('passport')),
         phone_no:yup.string().matches(phoneRegExp, _('phone')),
-        remarks:yup.string().max(500)
+        remarks:yup.string().nullable().max(500)
     });
 }
 
@@ -45,9 +45,9 @@ export const vehicleScheme = () => {
     return  yup.object().shape({
         plate_no: yup.string().matches(car_plate,_('car_plate')),
         production_year:yup.number().integer().typeError(_('required')).required(_('required')).min(CAR_MIN_YEAR).max((new Date()).getFullYear()),
-        car_type_id:yup.number().integer().required(_('required')),
+        car_type_id:yup.number().integer().typeError(_('required')).required(_('required')),
         no_of_seats: yup.number().integer().typeError(_('required')).required(_('required')).min(2).max(10),
-        price_per_day:yup.number().min(0).moreThan(0,_('price')),
+        price_per_day:yup.number().typeError(_('required')).min(0).moreThan(0,_('price')),
         remarks:yup.string().nullable().max(500)
     });
 }

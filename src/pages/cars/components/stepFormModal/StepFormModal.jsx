@@ -50,6 +50,7 @@ const StepFormModal = ({openModal,setOpenModal,title,form:{control,errors,handle
                     plate_no:'',
                     production_year:'',
                     no_of_seats:'',
+                    car_type_id:null,
                     price_per_day:0,
                     remarks:''
                 });else{
